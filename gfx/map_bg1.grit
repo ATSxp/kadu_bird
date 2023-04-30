@@ -1,0 +1,7 @@
+#
+# Map bg1: 
+# compressed (LZ77)
+# Regular map (SBB-layout) : 64x32 | 
+# flip, tiles, palette reduced
+#
+-gt -gB4 -gTff00ff -pn16 -m -mRtfp -mLs -Zl

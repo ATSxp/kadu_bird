@@ -1,0 +1,6 @@
+#
+# Kadu sprites: 
+# Regular Sprite 24x24
+# Tiles 4bpp | Alpha color: #FF00FF | 16 colors
+#
+-gt -gB4 -gTff00ff -pn16

@@ -1,0 +1,6 @@
+#
+# Pipe Sprite:
+# Regular Sprite 32x64
+# Palette 4bpp | Meta-tile 32x32
+#
+-gt -gB4 -gTff00ff -pn16 -Mw4 -Mh4

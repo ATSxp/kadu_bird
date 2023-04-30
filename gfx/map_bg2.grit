@@ -1,0 +1,8 @@
+#
+# Map bg2: 
+# compressed (LZ77)
+# Regular map (SBB-layout) : 64x32 | 
+# flip, tiles, palette reduced |
+# Tile id 155, Palbank 1
+#
+-gt -gB4 -gTff00ff -pn16 -m -mRtfp -mLs -ma155 -mp1 -Zl
