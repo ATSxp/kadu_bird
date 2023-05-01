@@ -6,7 +6,7 @@
 #define PLAYER_SPRS 2
 #define PLAYER_SPR_TILES 9
 #define PLAYER_GRAVITY float2fx(0.15f)
-#define PLAYER_JUMP 0x0280
+#define PLAYER_JUMP 0x0300
 
 Global::SprBase p_base_spr[PLAYER_SPR_COUNT] = {
   {0, 0,  OBJ_16X8, 0},
@@ -33,7 +33,7 @@ Player::Player() {
         (pos.y >> 8) + b->offsety,
         b->size,
         tid + b->offset_tid,
-        0, 0, NULL
+        0, 2, NULL
       );
 
     b++;
@@ -55,7 +55,8 @@ void Player::update() {
   POINT32 pt = {pos.x >> 8, pos.y >> 8};
   // dx = (key_tri_horz() << 8) << 1;
 
-  if (pt.y + (h - 2) < 0 || pt.y > SCREEN_HEIGHT - 2) dead = true;
+  if (pt.y + (h - 2) < 0 || pt.y > SCREEN_HEIGHT - 2)
+    dead = true;
 
   if (key_hit(KEY_A) && !dead) dy = -PLAYER_JUMP;
 

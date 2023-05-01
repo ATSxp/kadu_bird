@@ -35,7 +35,7 @@ Pipe::Pipe(int x, int y, FIXED speed) : dx(speed) {
   for (ii = 0; ii < PIPE_SPR_COUNT; ii++) {
     spr[ii] = T_addObj(
         x + b->offsetx, (y + b->offsety),
-        b->size, tid + b->offset_tid, 1, 0, NULL
+        b->size, tid + b->offset_tid, 1, 1, NULL
       );
     b++;
   }
@@ -43,20 +43,12 @@ Pipe::Pipe(int x, int y, FIXED speed) : dx(speed) {
   mgba_printf(MGBA_LOG_DEBUG, "Pipe created");
 }
 
-Pipe::~Pipe() {
-  int ii;
-
-  if (!dead) return;
-
-  for (ii = 0; ii < PIPE_SPR_COUNT; ii++) {
-    REM_SPR(spr[ii]);
-  }
-
-  mgba_printf(MGBA_LOG_DEBUG, "Pipe deleted");
-}
+Pipe::~Pipe() {}
 
 void Pipe::update() {
-  if ((pos.x >> 8) + w <= 0) dead = true;
+  if ((pos.x >> 8) + w <= 0) {
+    die();
+  }
 
   pos.x += dx;
   updateSprs();
@@ -81,11 +73,35 @@ void Pipe::updateSprs() {
 }
 
 void Pipe::PipeVsPlayer(Player &p) {
-  int ii;
+  int ii, kk;
+
+  if (p.dead) return;
+
   for (ii = 0; ii < PIPE_SPR_COUNT; ii++) {
-    if (T_objVsObj(spr[ii], *p.spr)) {
-      p.dead = true;
+    for (kk = 0; kk < PLAYER_SPR_COUNT; kk++) {
+      if (T_objVsObj(spr[ii], p.spr[kk])) {
+        p.dead = true;
+      }
     }
   }
 
+  if (p.spr[0]->x > spr[1]->x + 16 && !pointed) {
+    pointed = true;
+    p.points++;
+  }
+
+}
+
+void Pipe::die() {
+  int ii;
+
+  if (!dead) {
+    dead = true;
+
+    for (ii = 0; ii < PIPE_SPR_COUNT; ii++) {
+      REM_SPR(spr[ii]);
+    }
+
+    mgba_printf(MGBA_LOG_DEBUG, "Pipe deleted");
+  }
 }

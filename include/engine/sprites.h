@@ -59,6 +59,7 @@ void T_removeObj(TSprite *spr);
 void T_updateObjs(BOOL sort);
 void T_initObjs();
 BOOL T_objVsObj(TSprite *s, TSprite *s2);
+BOOL T_objVsObj2(TSprite *s, TSprite *s2, u32 w1, u32 h1);
 
 INLINE void T_setTileObj(TSprite *spr, u16 tid) {
   BFN_SET(spr_buffer[spr->id].obj.attr2, tid, ATTR2_ID);

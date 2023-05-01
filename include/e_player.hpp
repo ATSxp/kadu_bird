@@ -17,6 +17,7 @@ class Player {
     u32 w{24}, h{24};
     bool dead{false};
     TSprite *spr[PLAYER_SPR_COUNT];
+    u32 points{0};
 
     Player();
     ~Player();

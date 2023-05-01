@@ -26,9 +26,12 @@ s_game.o: /home/atsxp/Documentos/ats/gba/kadu_bird/source/s_game.cpp \
  /home/atsxp/Documentos/ats/gba/kadu_bird/source/../include/e_pipe.hpp \
  /home/atsxp/Documentos/ats/gba/kadu_bird/source/../include/e_player.hpp \
  /home/atsxp/Documentos/ats/gba/kadu_bird/source/../include/map.hpp \
+ /home/atsxp/Documentos/ats/gba/kadu_bird/build/gfx_board.h \
+ /home/atsxp/Documentos/ats/gba/kadu_bird/build/gfx_hp.h \
  /home/atsxp/Documentos/ats/gba/kadu_bird/build/map_bg1.h \
  /home/atsxp/Documentos/ats/gba/kadu_bird/build/map_bg2.h \
- /home/atsxp/Documentos/ats/gba/kadu_bird/build/map_bg3.h
+ /home/atsxp/Documentos/ats/gba/kadu_bird/build/map_bg3.h \
+ /home/atsxp/Documentos/ats/gba/kadu_bird/source/../include/verdana11.h
 /opt/devkitpro/libtonc/include/tonc.h:
 /opt/devkitpro/libtonc/include/tonc_types.h:
 /opt/devkitpro/libtonc/include/tonc_memmap.h:
@@ -56,6 +59,9 @@ s_game.o: /home/atsxp/Documentos/ats/gba/kadu_bird/source/s_game.cpp \
 /home/atsxp/Documentos/ats/gba/kadu_bird/source/../include/e_pipe.hpp:
 /home/atsxp/Documentos/ats/gba/kadu_bird/source/../include/e_player.hpp:
 /home/atsxp/Documentos/ats/gba/kadu_bird/source/../include/map.hpp:
+/home/atsxp/Documentos/ats/gba/kadu_bird/build/gfx_board.h:
+/home/atsxp/Documentos/ats/gba/kadu_bird/build/gfx_hp.h:
 /home/atsxp/Documentos/ats/gba/kadu_bird/build/map_bg1.h:
 /home/atsxp/Documentos/ats/gba/kadu_bird/build/map_bg2.h:
 /home/atsxp/Documentos/ats/gba/kadu_bird/build/map_bg3.h:
+/home/atsxp/Documentos/ats/gba/kadu_bird/source/../include/verdana11.h:

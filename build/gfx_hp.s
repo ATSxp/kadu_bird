@@ -1,0 +1,40 @@
+
+@{{BLOCK(gfx_hp)
+
+@=======================================================================
+@
+@	gfx_hp, 32x16@4, 
+@	Transparent color : FF,00,FF
+@	+ palette 16 entries, not compressed
+@	+ 8 tiles Metatiled by 2x2 not compressed
+@	Total size: 32 + 256 = 288
+@
+@	Time-stamp: 2023-05-01, 02:01:53
+@	Exported by Cearn's GBA Image Transmogrifier, v0.9.2
+@	( http://www.coranac.com/projects/#grit )
+@
+@=======================================================================
+
+	.section .rodata
+	.align	2
+	.global gfx_hpTiles		@ 256 unsigned chars
+	.hidden gfx_hpTiles
+gfx_hpTiles:
+	.word 0x00000000,0x10000000,0x00000000,0x00000000,0x00000000,0x10000000,0x21111110,0x22222221
+	.word 0x00000000,0x00001111,0x00012221,0x00012210,0x00122221,0x11322222,0x00132222,0x00012222
+	.word 0x22222231,0x22222310,0x22223100,0x23231000,0x31310000,0x10100000,0x10100000,0x11100000
+	.word 0x00012222,0x00013222,0x00001322,0x00000133,0x00000011,0x00000000,0x00000000,0x00000001
+	.word 0x00000000,0x10000000,0x00000000,0x00000000,0x00000000,0x10000000,0x31111110,0x43333331
+	.word 0x00000000,0x00001111,0x00013331,0x00014410,0x00134431,0x11344443,0x00144444,0x00014444
+	.word 0x44444441,0x44444410,0x44444100,0x44441000,0x41410000,0x10100000,0x10100000,0x11100000
+	.word 0x00014444,0x00014444,0x00001444,0x00000144,0x00000011,0x00000000,0x00000000,0x00000001
+
+	.section .rodata
+	.align	2
+	.global gfx_hpPal		@ 32 unsigned chars
+	.hidden gfx_hpPal
+gfx_hpPal:
+	.hword 0x7C1F,0x1084,0x20BA,0x20AF,0x775D,0x0000,0x0000,0x0000
+	.hword 0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000
+
+@}}BLOCK(gfx_hp)

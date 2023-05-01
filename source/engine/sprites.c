@@ -136,6 +136,13 @@ BOOL T_objVsObj(TSprite *s, TSprite *s2) {
   return (s->x < s2->x + sw2 && s->y < s2->y + sh2 && s2->x < s->x + sw && s2->y < s->y + sh);
 }
 
+BOOL T_objVsObj2(TSprite *s, TSprite *s2, u32 w1, u32 h1) {
+  int sw = w1, sh = h1;
+  int sw2 = obj_get_width(&s2->obj), sh2 = obj_get_height(&s2->obj);
+
+  return (s->x < s2->x + sw2 && s->y < s2->y + sh2 && s2->x < s->x + sw && s2->y < s->y + sh);
+}
+
 INLINE u16 _getShapeFromSize(u16 size) {
   if (size > 3) return ATTR0_WIDE;
   else if(size > 7) return ATTR0_TALL;

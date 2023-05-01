@@ -8,10 +8,12 @@
 #define PIPE_SPR_COUNT 12
 
 class Pipe {
-  u16 tid{18};
-  int space_btw;
+  private:
+    u16 tid{18};
+    int space_btw;
+    bool pointed{false};
 
-  void updateSprs();
+    void updateSprs();
 
   public:
     POINT32 pos;
@@ -25,6 +27,7 @@ class Pipe {
 
     void update();
     void PipeVsPlayer(Player &p);
+    void die();
 };
 
 #endif // !__PIPE_HPP__

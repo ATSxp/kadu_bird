@@ -6,11 +6,11 @@
 //	map_bg2, 512x256@4, 
 //	Transparent color : FF,00,FF
 //	+ palette 20 entries, lz77 compressed
-//	+ 53 tiles (t|f reduced) lz77 compressed
+//	+ 53 tiles (t|f|p reduced) lz77 compressed
 //	+ regular map (in SBBs), lz77 compressed, 64x32 
 //	Total size: 40 + 312 + 640 = 992
 //
-//	Time-stamp: 2023-04-29, 15:06:34
+//	Time-stamp: 2023-05-01, 01:52:59
 //	Exported by Cearn's GBA Image Transmogrifier, v0.9.2
 //	( http://www.coranac.com/projects/#grit )
 //

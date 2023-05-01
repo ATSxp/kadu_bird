@@ -21,7 +21,7 @@ Map::Map(u16 bg, const SCR_ENTRY *map, u32 w, u32 h, u16 cbb, u16 sbb, bool comp
 
   REG_BG_OFS[bg].x = 0x00;
   REG_BG_OFS[bg].y = 0x00;
-  REG_BGCNT[bg] = BG_CBB(cbb) | BG_SBB(sbb) | BG_4BPP | BG_REG_64x64;
+  REG_BGCNT[bg] = BG_CBB(cbb) | BG_SBB(sbb) | BG_4BPP | BG_REG_64x64 | BG_PRIO(3);
 }
 
 Map::~Map() {

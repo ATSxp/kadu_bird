@@ -1,0 +1,6 @@
+#
+# Board Sprite:
+# Regular Sprite 16x32 |
+# 4bpp Tiles
+#
+-gt -gB4 -gTff00ff -pn16 -Mw2
