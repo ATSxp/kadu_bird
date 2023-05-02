@@ -4,12 +4,15 @@
 #include "engine/gba.h"
 
 #define PLAYER_SPR_COUNT 6
+#define PLAYER_DAMAGE_MAX_T 0x0800
 
 class Player {
-  u16 tid{0};
+  private:
+    u16 tid{0};
+    FIXED damage_t{PLAYER_DAMAGE_MAX_T};
 
-  void updateSprites();
-  void setTile(u16 tid);
+    void updateSprites();
+    void setTile(u16 tid);
 
   public:
     POINT32 pos;
@@ -17,7 +20,8 @@ class Player {
     u32 w{24}, h{24};
     bool dead{false};
     TSprite *spr[PLAYER_SPR_COUNT];
-    u32 points{0};
+    u32 points{0}, hp{3};
+    bool damaged{false};
 
     Player();
     ~Player();

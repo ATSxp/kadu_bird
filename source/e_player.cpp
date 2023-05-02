@@ -38,6 +38,8 @@ Player::Player() {
 
     b++;
   }
+  
+  damage_t = PLAYER_DAMAGE_MAX_T;
 
   mgba_printf(MGBA_LOG_DEBUG, "Player created");
 }
@@ -54,16 +56,33 @@ Player::~Player() {
 void Player::update() {
   POINT32 pt = {pos.x >> 8, pos.y >> 8};
   // dx = (key_tri_horz() << 8) << 1;
+  hp = clamp(hp, 0, 4);
+  
+  if (damaged)
+    damage_t -= 0x030;
 
-  if (pt.y + (h - 2) < 0 || pt.y > SCREEN_HEIGHT - 2)
+  if (damage_t <= 0x00) {
+    damage_t = PLAYER_DAMAGE_MAX_T;
+    damaged = false;
+  }
+
+  if (pt.y > SCREEN_HEIGHT - 2 || hp <= 0)
     dead = true;
 
   if (key_hit(KEY_A) && !dead) dy = -PLAYER_JUMP;
 
-  if (dy < 0x00) setTile(PLAYER_SPR_TILES);
+  if (dy < 0x00 && !damaged) setTile(PLAYER_SPR_TILES);
+  else if (damaged) setTile(PLAYER_SPR_TILES << 1);
   else           setTile(0);
 
-  dy += PLAYER_GRAVITY;
+  if (pt.y <= 0)
+    pos.y = 0x00;
+  else if (pt.y > SCREEN_HEIGHT)
+    pos.y = SCREEN_HEIGHT << 8;
+
+  if (!dead || pt.y < SCREEN_HEIGHT)
+    dy += PLAYER_GRAVITY;
+  else dy = 0x00;
 
   pos.x += dx;
   pos.y += dy;

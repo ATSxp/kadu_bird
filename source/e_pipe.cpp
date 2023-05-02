@@ -25,7 +25,7 @@ Pipe::Pipe(int x, int y, FIXED speed) : dx(speed) {
   int ii;
   const Global::SprBase *b = pipe_base;
 
-  space_btw = 96 + qran_range(64, 80);
+  space_btw = static_cast<int>(h) + qran_range(64, 90);
   pos.x = x << 8;
   pos.y = y << 8;
 
@@ -34,8 +34,8 @@ Pipe::Pipe(int x, int y, FIXED speed) : dx(speed) {
 
   for (ii = 0; ii < PIPE_SPR_COUNT; ii++) {
     spr[ii] = T_addObj(
-        x + b->offsetx, (y + b->offsety),
-        b->size, tid + b->offset_tid, 1, 1, NULL
+        x + b->offsetx, y + b->offsety,
+        b->size, tid + b->offset_tid, 1, 2, NULL
       );
     b++;
   }
@@ -46,9 +46,7 @@ Pipe::Pipe(int x, int y, FIXED speed) : dx(speed) {
 Pipe::~Pipe() {}
 
 void Pipe::update() {
-  if ((pos.x >> 8) + w <= 0) {
-    die();
-  }
+  if ((pos.x >> 8) + w <= 0) die();
 
   pos.x += dx;
   updateSprs();
@@ -73,16 +71,23 @@ void Pipe::updateSprs() {
 }
 
 void Pipe::PipeVsPlayer(Player &p) {
-  int ii, kk;
+  POINT32 pt1 = {pos.x >> 8, pos.y >> 8};
+  POINT32 pt2 = {(p.pos.x >> 8) + 8, (p.pos.y >> 8) + 8};
+
+  bool up_pipe = Global::AABB(
+      pt1, w, h,
+      pt2, p.w - 8, p.h - 8
+    ), 
+      down_pipe = Global::AABB(
+      (POINT32){pt1.x, pt1.y + space_btw}, w, h,
+      pt2, p.w - 8, p.h - 8
+    );
 
   if (p.dead) return;
 
-  for (ii = 0; ii < PIPE_SPR_COUNT; ii++) {
-    for (kk = 0; kk < PLAYER_SPR_COUNT; kk++) {
-      if (T_objVsObj(spr[ii], p.spr[kk])) {
-        p.dead = true;
-      }
-    }
+  if ((up_pipe || down_pipe) && !p.damaged) {
+    p.damaged = true;
+    p.hp--;
   }
 
   if (p.spr[0]->x > spr[1]->x + 16 && !pointed) {

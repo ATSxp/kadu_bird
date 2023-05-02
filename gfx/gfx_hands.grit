@@ -1,0 +1,6 @@
+#
+# Hands Sprite:
+# Regular Sprite 32x64
+# 4bpp Tiles
+#
+-gt -gB4 -gTff00ff -pn16 -Mw4 -Mh4

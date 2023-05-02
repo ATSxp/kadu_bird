@@ -17,6 +17,9 @@
 
 #include "../include/verdana11.h"
 
+#define BOARD_TID 72
+#define HP_TID 80
+
 namespace Game {
   int ii;
 
@@ -32,7 +35,7 @@ namespace Game {
     (TILE4*)map_bg3Tiles,
   };
 
-  constexpr s16 tids[3] = {0, 155, 208};
+  constexpr u16 tids[3] = {0, 155, 208};
   constexpr FIXED bg_speeds[3] = {0x090, 0x050, -0x020};
 
   std::shared_ptr<Player> p{nullptr};
@@ -40,7 +43,6 @@ namespace Game {
   std::vector<Pipe> pipe_l;
   FIXED pipe_t;
   TSprite *board_spr[2] = {nullptr};
-  TSprite *hp_spr[3] = {nullptr};
 
   void spawnPipes();
 
@@ -60,22 +62,22 @@ namespace Game {
       );
 
     TONC_CPY(pal_obj_bank[2], gfx_boardPal);
-    TONC_CPY(&tile_mem[4][64], gfx_boardTiles);
+    TONC_CPY(&tile_mem[4][BOARD_TID], gfx_boardTiles);
 
     TONC_CPY(pal_obj_bank[3], gfx_hpPal);
-    TONC_CPY(&tile_mem[4][72], gfx_hpTiles);
+    TONC_CPY(&tile_mem[4][HP_TID], gfx_hpTiles);
 
     p = std::make_shared<Player>();
 
-    board_spr[0] = T_addObj(0, 0, OBJ_16X32, 64, 2, 1, NULL);
-    board_spr[1] = T_addObj(32, 0, OBJ_16X32, 64, 2, 1, NULL);
+    board_spr[0] = T_addObj(1, 1, OBJ_16X32, BOARD_TID, 2, 1, NULL);
+    board_spr[1] = T_addObj(33, 1, OBJ_16X32, BOARD_TID, 2, 1, NULL);
     T_flipObj(board_spr[1], TRUE, FALSE); // Flip sprite right on the board
 
     for (ii = 0; ii < 3; ii++) {
-      hp_spr[ii] = T_addObj(
-          ii << 4, SCREEN_HEIGHT - 16, 
+      Global::hp_spr[ii] = T_addObj(
+          (ii << 4) + 1, SCREEN_HEIGHT - 17, 
           OBJ_16X16, 
-          72, 3, 1, NULL
+          HP_TID, 3, 1, NULL
         );
     }
 
@@ -91,15 +93,17 @@ namespace Game {
   }
 
   void update(void) {
-    CSTR board_txt = "#{es;P:%d,0}%04d";
+    CSTR board_txt = "#{es;P:6,1}%06d";
     char dst_board[strlen(board_txt)];
 
     p->update();
     spawnPipes();
 
-    // 26 = ( ( ( board_txt length * 8 ) - 11 ) - 32 ) / 2
-    posprintf(dst_board, board_txt, 26, p->points);
+    posprintf(dst_board, board_txt, p->points);
     tte_write(dst_board);
+
+    if (p->hp < 3)
+      T_setTileObj(Global::hp_spr[p->hp], HP_TID + 4);
 
     for (ii = 0; ii < 3; ii++)
       bg[ii]->update();
@@ -128,15 +132,21 @@ namespace Game {
 
     pipe_l.clear();
 
-    for (ii = 0; ii < 3; ii++)
+    for (ii = 0; ii < 2; ii++) {
+      REM_SPR(board_spr[ii]);
+    }
+
+    for (ii = 0; ii < 3; ii++) {
+      REM_SPR(Global::hp_spr[ii]);
       bg[ii] = nullptr;
+    }
   }
 
   void spawnPipes() {
     pipe_t -= 0x020;
 
     if (pipe_t <= 0 && pipe_l.size() < 5) {
-      std::shared_ptr<Pipe> pipe = std::make_shared<Pipe>(SCREEN_WIDTH, qran_range(-80, -16));
+      std::shared_ptr<Pipe> pipe = std::make_shared<Pipe>(SCREEN_WIDTH, qran_range(-90, -16));
       pipe_l.push_back(*pipe);
       pipe_t = 0x02000;
     }
@@ -151,5 +161,4 @@ namespace Global {
     Game::update,
     Game::end,
   };
-
 }
