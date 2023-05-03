@@ -1,5 +1,4 @@
 #include "../include/e_player.hpp"
-#include "../include/global.hpp"
 
 #include "gfx_kadu.h"
 
@@ -8,17 +7,7 @@
 #define PLAYER_GRAVITY float2fx(0.15f)
 #define PLAYER_JUMP 0x0300
 
-Global::SprBase p_base_spr[PLAYER_SPR_COUNT] = {
-  {0, 0,  OBJ_16X8, 0},
-  {0, 8,  OBJ_16X8, 3},
-  {0, 16, OBJ_16X8, 6},
-  {16, 0,  OBJ_8X8, 2},
-  {16, 8,  OBJ_8X8, 5},
-  {16, 16, OBJ_8X8, 8},
-};
-
 Player::Player() {
-  int ii;
   Global::SprBase *b = p_base_spr;
 
   pos.x = (w << 1) << 8;
@@ -58,16 +47,21 @@ void Player::update() {
   // dx = (key_tri_horz() << 8) << 1;
   hp = clamp(hp, 0, 4);
   
-  if (damaged)
-    damage_t -= 0x030;
+  if (!dead) {
+    if (damaged)
+      damage_t -= 0x030;
 
-  if (damage_t <= 0x00) {
-    damage_t = PLAYER_DAMAGE_MAX_T;
-    damaged = false;
+    if (damage_t <= 0x00) {
+      damage_t = PLAYER_DAMAGE_MAX_T;
+      damaged = false;
+    }
+
+    // Player die
+    if ((pt.y > SCREEN_HEIGHT - 2 || hp <= 0)) {
+      dead = true;
+      damaged = true;
+    }
   }
-
-  if (pt.y > SCREEN_HEIGHT - 2 || hp <= 0)
-    dead = true;
 
   if (key_hit(KEY_A) && !dead) dy = -PLAYER_JUMP;
 
@@ -82,7 +76,6 @@ void Player::update() {
 
   if (!dead || pt.y < SCREEN_HEIGHT)
     dy += PLAYER_GRAVITY;
-  else dy = 0x00;
 
   pos.x += dx;
   pos.y += dy;
@@ -90,7 +83,6 @@ void Player::update() {
 }
 
 void Player::updateSprites() {
-  int ii;
   Global::SprBase *b = p_base_spr;
   POINT32 pt = {pos.x >> 8, pos.y >> 8};
 
@@ -102,7 +94,6 @@ void Player::updateSprites() {
 }
 
 void Player::setTile(u16 tid) {
-  int ii;
   Global::SprBase *b = p_base_spr;
 
   for (ii = 0; ii < PLAYER_SPR_COUNT; ii++) {

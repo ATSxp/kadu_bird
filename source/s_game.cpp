@@ -6,10 +6,12 @@
 #include "../include/global.hpp"
 #include "../include/e_player.hpp"
 #include "../include/e_pipe.hpp"
+#include "../include/e_game_over.hpp"
 #include "../include/map.hpp"
 
 #include "gfx_board.h"
 #include "gfx_hp.h"
+#include "gfx_pipe.h"
 
 #include "map_bg1.h"
 #include "map_bg2.h"
@@ -17,11 +19,13 @@
 
 #include "../include/verdana11.h"
 
-#define BOARD_TID 72
-#define HP_TID 80
+#define BOARD_TID 59
+#define HP_TID 67
 
 namespace Game {
   int ii;
+  size_t kk;
+  bool game_over;
 
   constexpr SCR_ENTRY *maps[3] = {
     (SCR_ENTRY*)map_bg1Map,
@@ -40,11 +44,19 @@ namespace Game {
 
   std::shared_ptr<Player> p{nullptr};
   std::shared_ptr<Map> bg[3]{nullptr, nullptr, nullptr};
+  std::shared_ptr<GameOver> gmovr{nullptr};
   std::vector<Pipe> pipe_l;
   FIXED pipe_t;
   TSprite *board_spr[2] = {nullptr};
+  u8 evy;
+  bool paused;
+
+  int t{0};
 
   void spawnPipes();
+  void diePipes();
+  void hideHud();
+  void showHud();
 
   void init(void) {
     T_setMode(0);
@@ -52,14 +64,18 @@ namespace Game {
     T_enableObjs();
     T_initObjs();
 
+    REG_BLDCNT = (BLD_ALL & ~BLD_BG0) | BLD_BLACK;
+
     tte_init_chr4c(
         0, 
         BG_CBB(1) | BG_SBB(20) | BG_PRIO(0), 
         SE_PALBANK(15), 
-        14, 
+        2, 
         CLR_BLACK, 
         &verdana11Font, (fnDrawg)chr4c_drawg_b1cts_fast
       );
+    pal_bg_bank[15][3] = CLR_WHITE;
+    pal_bg_bank[15][4] = CLR_RED;
 
     TONC_CPY(pal_obj_bank[2], gfx_boardPal);
     TONC_CPY(&tile_mem[4][BOARD_TID], gfx_boardTiles);
@@ -89,34 +105,78 @@ namespace Game {
       bg[ii]->move(bg_speeds[ii], 0x00);
     }
 
+    paused = false;
+    game_over = false;
     pipe_t = 0x00;
+    evy = 0x00;
   }
 
   void update(void) {
+    t++;
     CSTR board_txt = "#{es;P:6,1}%06d";
     char dst_board[strlen(board_txt)];
 
-    p->update();
-    spawnPipes();
-
+    tte_set_ink(2);
     posprintf(dst_board, board_txt, p->points);
     tte_write(dst_board);
+
+    if (key_hit(KEY_START)) paused = !paused;
 
     if (p->hp < 3)
       T_setTileObj(Global::hp_spr[p->hp], HP_TID + 4);
 
-    for (ii = 0; ii < 3; ii++)
-      bg[ii]->update();
+    // Fade background and pipes
+    REG_BLDY = BLDY_BUILD(evy >> 3);
+    if (!paused)
+      clr_fade(gfx_pipePal, CLR_BLACK, pal_obj_bank[1], 16, evy >> 2);
 
-    // Update Pipes
-    if (pipe_l.size() != 0) {
-      size_t kk;
-      for (kk = 0; kk < pipe_l.size(); kk++) {
-        if (pipe_l[kk].dead)
-          pipe_l.erase(pipe_l.begin() + kk);
+    if (p->dead) {
+      REG_BLDCNT &= ~BLD_OBJ;
+      evy += 4;
+      evy = clamp(evy, 0, 0x081);
 
-        pipe_l[kk].update();
-        pipe_l[kk].PipeVsPlayer(*p);
+      tte_erase_line();
+      hideHud();
+
+      if (!game_over) {
+        game_over = true;
+        gmovr = std::make_shared<GameOver>();
+      }
+
+      gmovr->update(*p);
+    }
+
+    if (paused && !p->dead) {
+      evy = 0x060;
+
+      tte_erase_line();
+      tte_set_ink(3);
+
+      if (((t >> 4) & 3) == 0)
+        tte_write("#{P:96,72}Paused");
+
+      hideHud();
+    } else {
+      if (!p->dead) {
+        evy = 0x00;
+        showHud();
+      }
+
+      p->update();
+      spawnPipes();
+
+      for (ii = 0; ii < 3; ii++)
+        bg[ii]->update();
+
+      // Update Pipes
+      if (pipe_l.size() != 0) {
+        for (kk = 0; kk < pipe_l.size(); kk++) {
+          if (pipe_l[kk].dead)
+            pipe_l.erase(pipe_l.begin() + kk);
+
+          pipe_l[kk].update();
+          pipe_l[kk].PipeVsPlayer(*p);
+        }
       }
     }
 
@@ -125,12 +185,10 @@ namespace Game {
 
   void end(void) {
     p = nullptr;
+    gmovr = nullptr;
 
-    size_t kk;
-    for (kk = 0; kk < pipe_l.size(); ii++)
-      pipe_l[kk].die();
-
-    pipe_l.clear();
+    if (pipe_l.size() != 0)
+      diePipes();
 
     for (ii = 0; ii < 2; ii++) {
       REM_SPR(board_spr[ii]);
@@ -145,12 +203,37 @@ namespace Game {
   void spawnPipes() {
     pipe_t -= 0x020;
 
-    if (pipe_t <= 0 && pipe_l.size() < 5) {
+    if (pipe_t <= 0 && pipe_l.size() < 5 && !p->dead) {
       std::shared_ptr<Pipe> pipe = std::make_shared<Pipe>(SCREEN_WIDTH, qran_range(-90, -16));
       pipe_l.push_back(*pipe);
       pipe_t = 0x02000;
     }
 
+  }
+
+  void diePipes() {
+    for (kk = 0; kk < pipe_l.size(); ii++)
+      pipe_l[kk].die();
+
+    pipe_l.clear();
+  }
+
+  void hideHud() {
+    for (ii = 0; ii < 3; ii++) {
+      T_hideObj(Global::hp_spr[ii]);
+    }
+
+    for (ii = 0; ii < 2; ii++)
+      T_hideObj(board_spr[ii]);
+  }
+
+  void showHud() {
+    for (ii = 0; ii < 3; ii++) {
+      T_showObj(Global::hp_spr[ii]);
+    }
+
+    for (ii = 0; ii < 2; ii++)
+      T_showObj(board_spr[ii]);
   }
 
 }

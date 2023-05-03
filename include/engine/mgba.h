@@ -25,7 +25,7 @@
 
 #include <tonc.h>
 
-// #define MGBA_DEBUG
+#define MGBA_DEBUG
 
 #define MGBA_LOG_FATAL 0
 #define MGBA_LOG_ERROR 1

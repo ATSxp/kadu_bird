@@ -2,14 +2,25 @@
 #define __PLAYER__HPP__
 
 #include "engine/gba.h"
+#include "../include/global.hpp"
 
 #define PLAYER_SPR_COUNT 6
 #define PLAYER_DAMAGE_MAX_T 0x0800
 
 class Player {
   private:
+    int ii;
     u16 tid{0};
     FIXED damage_t{PLAYER_DAMAGE_MAX_T};
+
+    Global::SprBase p_base_spr[PLAYER_SPR_COUNT] = {
+      {0, 0,  OBJ_16X8, 0},
+      {0, 8,  OBJ_16X8, 3},
+      {0, 16, OBJ_16X8, 6},
+      {16, 0,  OBJ_8X8, 2},
+      {16, 8,  OBJ_8X8, 5},
+      {16, 16, OBJ_8X8, 8},
+    };
 
     void updateSprites();
     void setTile(u16 tid);
