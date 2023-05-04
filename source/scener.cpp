@@ -25,5 +25,4 @@ namespace Scener {
     FUNC_IS_NULL(l_cur_scene.update);
   }
 
-
 }

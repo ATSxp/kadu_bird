@@ -5,7 +5,7 @@ int main () {
   mgba_open();
   T_init();
 
-  Scener::set(Global::s_game);
+  Scener::set(Global::s_menu);
 
   while(true) {
     T_update();

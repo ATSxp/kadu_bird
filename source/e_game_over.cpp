@@ -59,6 +59,6 @@ void GameOver::update(Player &p) {
     tte_write(dst);
 
     if (key_hit(KEY_START))
-      SoftReset();
+      Scener::set(Global::s_game);
   }
 }

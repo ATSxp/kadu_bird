@@ -47,11 +47,9 @@ namespace Game {
   std::shared_ptr<GameOver> gmovr{nullptr};
   std::vector<Pipe> pipe_l;
   FIXED pipe_t;
-  TSprite *board_spr[2] = {nullptr};
+  TSprite *board_spr[2] = {nullptr, nullptr};
   u8 evy;
   bool paused;
-
-  int t{0};
 
   void spawnPipes();
   void diePipes();
@@ -61,6 +59,7 @@ namespace Game {
   void init(void) {
     T_setMode(0);
     T_enableBg(0);
+
     T_enableObjs();
     T_initObjs();
 
@@ -112,7 +111,6 @@ namespace Game {
   }
 
   void update(void) {
-    t++;
     CSTR board_txt = "#{es;P:6,1}%06d";
     char dst_board[strlen(board_txt)];
 
@@ -127,6 +125,7 @@ namespace Game {
 
     // Fade background and pipes
     REG_BLDY = BLDY_BUILD(evy >> 3);
+
     if (!paused)
       clr_fade(gfx_pipePal, CLR_BLACK, pal_obj_bank[1], 16, evy >> 2);
 
@@ -147,13 +146,12 @@ namespace Game {
     }
 
     if (paused && !p->dead) {
-      evy = 0x060;
+      evy = 0x040;
 
       tte_erase_line();
       tte_set_ink(3);
 
-      if (((t >> 4) & 3) == 0)
-        tte_write("#{P:96,72}Paused");
+      tte_write("#{P:96,72}Paused");
 
       hideHud();
     } else {
@@ -184,20 +182,26 @@ namespace Game {
   }
 
   void end(void) {
+    tte_erase_screen();
+    tte_set_pos(0, 0);
+
     p = nullptr;
     gmovr = nullptr;
 
-    if (pipe_l.size() != 0)
-      diePipes();
+    diePipes();
+
+    for (ii = 0; ii < 3; ii++) {
+      REM_SPR(Global::hp_spr[ii]);
+      bg[ii] = nullptr;
+      T_disableBg(ii + 1);
+    }
 
     for (ii = 0; ii < 2; ii++) {
       REM_SPR(board_spr[ii]);
     }
 
-    for (ii = 0; ii < 3; ii++) {
-      REM_SPR(Global::hp_spr[ii]);
-      bg[ii] = nullptr;
-    }
+    RegisterRamReset(RESET_PALETTE);
+    RegisterRamReset(RESET_VRAM);
   }
 
   void spawnPipes() {
@@ -212,25 +216,25 @@ namespace Game {
   }
 
   void diePipes() {
-    for (kk = 0; kk < pipe_l.size(); ii++)
+    if (pipe_l.size() == 0) return;
+
+    for (kk = 0; kk < pipe_l.size(); kk++)
       pipe_l[kk].die();
 
     pipe_l.clear();
   }
 
   void hideHud() {
-    for (ii = 0; ii < 3; ii++) {
+    for (ii = 0; ii < 3; ii++)
       T_hideObj(Global::hp_spr[ii]);
-    }
 
     for (ii = 0; ii < 2; ii++)
       T_hideObj(board_spr[ii]);
   }
 
   void showHud() {
-    for (ii = 0; ii < 3; ii++) {
+    for (ii = 0; ii < 3; ii++)
       T_showObj(Global::hp_spr[ii]);
-    }
 
     for (ii = 0; ii < 2; ii++)
       T_showObj(board_spr[ii]);
