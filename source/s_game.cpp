@@ -25,7 +25,6 @@
 namespace Game {
   int ii;
   size_t kk;
-  bool game_over;
 
   constexpr SCR_ENTRY *maps[3] = {
     (SCR_ENTRY*)map_bg1Map,
@@ -50,6 +49,7 @@ namespace Game {
   TSprite *board_spr[2] = {nullptr, nullptr};
   u8 evy;
   bool paused;
+  bool game_over;
 
   void spawnPipes();
   void diePipes();
@@ -57,6 +57,8 @@ namespace Game {
   void showHud();
 
   void init(void) {
+    sqran(Global::seed_rand);
+
     T_setMode(0);
     T_enableBg(0);
 
@@ -134,6 +136,9 @@ namespace Game {
       evy += 4;
       evy = clamp(evy, 0, 0x081);
 
+      if (evy >= 0x080)
+        diePipes();
+
       tte_erase_line();
       hideHud();
 
@@ -148,10 +153,7 @@ namespace Game {
     if (paused && !p->dead) {
       evy = 0x040;
 
-      tte_erase_line();
-      tte_set_ink(3);
-
-      tte_write("#{P:96,72}Paused");
+      tte_write("#{el;P:96,72;ci:3}Paused");
 
       hideHud();
     } else {
@@ -193,7 +195,6 @@ namespace Game {
     for (ii = 0; ii < 3; ii++) {
       REM_SPR(Global::hp_spr[ii]);
       bg[ii] = nullptr;
-      T_disableBg(ii + 1);
     }
 
     for (ii = 0; ii < 2; ii++) {
@@ -208,7 +209,7 @@ namespace Game {
     pipe_t -= 0x020;
 
     if (pipe_t <= 0 && pipe_l.size() < 5 && !p->dead) {
-      std::shared_ptr<Pipe> pipe = std::make_shared<Pipe>(SCREEN_WIDTH, qran_range(-90, -16));
+      std::shared_ptr<Pipe> pipe = std::make_shared<Pipe>(SCREEN_WIDTH, qran_range(-24, -90));
       pipe_l.push_back(*pipe);
       pipe_t = 0x02000;
     }

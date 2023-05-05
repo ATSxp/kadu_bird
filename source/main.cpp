@@ -10,6 +10,7 @@ int main () {
   while(true) {
     T_update();
     Scener::update();
+    Global::seed_rand++;
   }
 
   return 0;

@@ -3,15 +3,36 @@
 
 #include "engine/gba.h"
 #include "e_player.hpp"
+#include "global.hpp"
 #include <array>
 
 #define PIPE_SPR_COUNT 12
 
 class Pipe {
   private:
+    int ii;
+
     u16 tid{27};
     int space_btw;
     bool pointed{false};
+
+    Global::SprBase pipe_base[PIPE_SPR_COUNT]{
+      // Up
+      {0,  64, OBJ_32X32, 0},
+      {32, 64, OBJ_32X32, 0},
+      {0,  32, OBJ_32X32, 8},
+      {32, 32, OBJ_32X32, 8},
+      {0,   0, OBJ_32X32, 8},
+      {32,  0, OBJ_32X32, 8},
+
+      // Down
+      {0,   0, OBJ_32X32, 0},
+      {32,  0, OBJ_32X32, 0},
+      {0,  32, OBJ_32X32, 8},
+      {32, 32, OBJ_32X32, 8},
+      {0,  64, OBJ_32X32, 8},
+      {32, 64, OBJ_32X32, 8},
+    };
 
     void updateSprs();
 

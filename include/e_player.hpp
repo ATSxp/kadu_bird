@@ -10,6 +10,7 @@
 class Player {
   private:
     int ii;
+
     u16 tid{0};
     FIXED damage_t{PLAYER_DAMAGE_MAX_T};
 

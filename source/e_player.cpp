@@ -34,7 +34,6 @@ Player::Player() {
 }
 
 Player::~Player() {
-  int ii;
   for (ii = 0; ii < PLAYER_SPR_COUNT; ii++) {
     REM_SPR(spr[ii]);
   }

@@ -29,6 +29,7 @@ Map::~Map() {
   SBB_CLEAR(sbb);
   REG_BGCNT[bg] = 0x00;
   toncset(&se_mem[sbb][cbb], 0x00, (w << 3) << 3);
+  T_disableBg(bg);
 }
 
 void Map::update() {

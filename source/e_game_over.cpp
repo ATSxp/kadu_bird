@@ -13,7 +13,7 @@ GameOver::GameOver() {
   for (ii = 0; ii < static_cast<int>(hand_spr.size()); ii++) {
     hand_spr[ii] = T_addObj(
         hand_pos[ii].x, hand_pos[ii].y,
-        OBJ_32X32, tid_hand, 4, 0, NULL
+        OBJ_32X32, tid_hand, 4, ii, NULL
       );
   }
   T_flipObj(hand_spr[1], TRUE, FALSE);
@@ -28,10 +28,9 @@ GameOver::~GameOver() {
 void GameOver::update(Player &p) {
   char dst[strlen(txt)];
   FIXED sx = ((SCREEN_WIDTH - p.w) >> 1) << 8, sy = ((SCREEN_HEIGHT - p.h) >> 1) << 8;
-  FIXED dx, dy;
 
-  dx = ArcTan(sx - p.pos.x) >> 3;
-  dy = ArcTan(sy - p.pos.y) >> 3;
+  FIXED dx {ArcTan(sx - p.pos.x) >> 3};
+  FIXED dy {ArcTan(sy - p.pos.y) >> 3};
 
   p.dx = dx;
   p.dy = dy;
@@ -54,8 +53,22 @@ void GameOver::update(Player &p) {
     }
   }
 
+  CSTR point_txt ="#{es;P:0,0;ci:%d}Points: %d %s"; 
+  char d[40];
+
   if (show_txt) {
+    if (p.points > Global::record_point)
+      record_breaked = true;
+
+    if (record_breaked) {
+      Global::record_point = p.points;
+      posprintf(d, point_txt, 4, p.points, "New Record!!");
+    } else
+      posprintf(d, point_txt, 3, p.points, "");
+
     posprintf(dst, txt, p.points);
+
+    tte_write(d);
     tte_write(dst);
 
     if (key_hit(KEY_START))

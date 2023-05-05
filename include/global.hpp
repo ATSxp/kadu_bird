@@ -17,6 +17,7 @@ namespace Global {
 
   extern Scener::Scene s_menu;
   extern Scener::Scene s_game;
+  extern u32 seed_rand, record_point;
 
   extern TSprite *hp_spr[3];
 

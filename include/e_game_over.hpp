@@ -9,11 +9,11 @@ class GameOver {
   private:
     int ii;
     bool show_txt{false};
-    // tmp
+    bool record_breaked{false};
+
     CSTR txt{
-      "#{es;P:84,120;ci:4}Game over"
-      "#{P:0,0;ci:3}Points: %d"
-      "#{P:92,136}[START]"
+      "#{P:84,120;ci:4}Game over"
+      "#{P:92,136;ci:3}[START]"
     };
 
     cu16 tid_hand{71};
