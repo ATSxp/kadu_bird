@@ -18,12 +18,19 @@ Map::Map(u16 bg, const SCR_ENTRY *map, u32 w, u32 h, u16 cbb, u16 sbb, bool comp
     if (compressed)
       LZ77UnCompVram(map, &se_mem[sbb][cbb]);
     else
-      tonccpy(&se_mem[sbb][cbb], map, (w << 3) << 3);
+      tonccpy(&se_mem[sbb], map, (w << 3) << 3);
   }
 
   REG_BG_OFS[bg].x = 0x00;
   REG_BG_OFS[bg].y = 0x00;
-  REG_BGCNT[bg] = BG_CBB(cbb) | BG_SBB(sbb) | BG_4BPP | BG_REG_64x32 | BG_PRIO(3);
+  REG_BGCNT[bg] = BG_CBB(cbb) | BG_SBB(sbb) | BG_4BPP | BG_PRIO(3);
+
+  if (w == 64 && h == 32)
+    REG_BGCNT[bg] |= BG_REG_64x32;
+  else if (w == 64 && h == 64)
+    REG_BGCNT[bg] |= BG_REG_64x64;
+  else
+    REG_BGCNT[bg] |= BG_REG_32x32;
 }
 
 Map::~Map() {
