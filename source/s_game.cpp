@@ -26,30 +26,14 @@ namespace Game {
   int ii;
   size_t kk;
 
-  constexpr SCR_ENTRY *maps[3] = {
-    (SCR_ENTRY*)map_bg1Map,
-    (SCR_ENTRY*)map_bg2Map,
-    (SCR_ENTRY*)map_bg3Map,
-  };
-
-  const TILE4 *tiles[3] = {
-    (TILE4*)map_bg1Tiles,
-    (TILE4*)map_bg2Tiles,
-    (TILE4*)map_bg3Tiles,
-  };
-
-  constexpr u16 tids[3] = {0, 155, 208};
-  constexpr FIXED bg_speeds[3] = {0x090, 0x050, -0x020};
-
   std::shared_ptr<Player> p{nullptr};
   std::shared_ptr<Map> bg[3]{nullptr, nullptr, nullptr};
   std::shared_ptr<GameOver> gmovr{nullptr};
+  TSprite *board_spr[2]{nullptr, nullptr};
   std::vector<Pipe> pipe_l;
   FIXED pipe_t;
-  TSprite *board_spr[2] = {nullptr, nullptr};
   u8 evy;
-  bool paused;
-  bool game_over;
+  bool paused, game_over;
 
   void spawnPipes();
   void diePipes();
@@ -57,6 +41,21 @@ namespace Game {
   void showHud();
 
   void init(void) {
+    constexpr SCR_ENTRY *maps[3] = {
+      (SCR_ENTRY*)map_bg1Map,
+      (SCR_ENTRY*)map_bg2Map,
+      (SCR_ENTRY*)map_bg3Map,
+    };
+
+    const TILE4 *tiles[3] = {
+      (TILE4*)map_bg1Tiles,
+      (TILE4*)map_bg2Tiles,
+      (TILE4*)map_bg3Tiles,
+    };
+
+    constexpr u16 tids[3] = {0, 155, 208};
+    constexpr FIXED bg_speeds[3] = {0x090, 0x050, -0x020};
+
     sqran(Global::seed_rand);
 
     T_setMode(0);

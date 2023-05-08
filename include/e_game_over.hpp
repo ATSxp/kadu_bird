@@ -24,7 +24,7 @@ class GameOver {
       {SCREEN_WIDTH << 8, int2fx((SCREEN_HEIGHT - 24) >> 1)}
     };
 
-    std::array<const FIXED, 2> hand_speed{0x0380, -0x0380};
+    std::array<const FIXED, 2> hand_speed{0x0680, -0x0680};
     std::array<TSprite *, 2> hand_spr{nullptr, nullptr};
 
   public:

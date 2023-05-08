@@ -1,0 +1,6 @@
+#
+# Kadu glass cursor:
+# Sprite 16x8 |
+# 4bpp Tiles
+#
+-gt -gB4 -gTff00ff -pn16 -Mw2

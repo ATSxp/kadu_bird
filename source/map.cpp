@@ -14,14 +14,16 @@ Map::Map(u16 bg, const SCR_ENTRY *map, u32 w, u32 h, u16 cbb, u16 sbb, bool comp
   if (!BIT_EQ(REG_DISPCNT, bgnr)) 
     T_enableBg(bg);
 
-  if (compressed)
-    LZ77UnCompVram(map, &se_mem[sbb][cbb]);
-  else
-    tonccpy(&se_mem[sbb][cbb], map, (w << 3) << 3);
+  if (map) {
+    if (compressed)
+      LZ77UnCompVram(map, &se_mem[sbb][cbb]);
+    else
+      tonccpy(&se_mem[sbb][cbb], map, (w << 3) << 3);
+  }
 
   REG_BG_OFS[bg].x = 0x00;
   REG_BG_OFS[bg].y = 0x00;
-  REG_BGCNT[bg] = BG_CBB(cbb) | BG_SBB(sbb) | BG_4BPP | BG_REG_64x64 | BG_PRIO(3);
+  REG_BGCNT[bg] = BG_CBB(cbb) | BG_SBB(sbb) | BG_4BPP | BG_REG_64x32 | BG_PRIO(3);
 }
 
 Map::~Map() {

@@ -17,9 +17,20 @@ class Map {
     ~Map();
 
     void update();
+
     void move(FIXED dx, FIXED dy) {
       this->dx = dx;
       this->dy = dy;
+    }
+
+    void setBpp(bool _8bpp) {
+      REG_BGCNT[bg] &= ~BG_4BPP;
+      REG_BGCNT[bg] &= ~BG_8BPP;
+
+      if (_8bpp)
+        REG_BGCNT[bg] |= BG_8BPP;
+      else
+        REG_BGCNT[bg] |= BG_4BPP;
     }
 };
 

@@ -1,0 +1,5 @@
+#
+# Map Menu bg2:
+# SBB-layout 32x32 | 8bpp Tiles
+#
+-gt -gB8 -p! -m -ma92 -mLs -mRft -Zl
