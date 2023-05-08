@@ -16,7 +16,7 @@ Map::Map(u16 bg, const SCR_ENTRY *map, u32 w, u32 h, u16 cbb, u16 sbb, bool comp
 
   if (map) {
     if (compressed)
-      LZ77UnCompVram(map, &se_mem[sbb][cbb]);
+      LZ77UnCompVram(map, &se_mem[sbb]);
     else
       tonccpy(&se_mem[sbb], map, (w << 3) << 3);
   }
