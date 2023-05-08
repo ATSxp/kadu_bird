@@ -2,5 +2,5 @@
 # Map Menu bg3:
 # SBB-layout 32x32 | 8bpp Tiles
 #
--gt -gB8 -p! -m -ma 357 -mLs -mRft -Zl
+-gt -gB8 -p! -aw 240 -ah 160 -m -ma 357 -mLs -mRft -Zl
 

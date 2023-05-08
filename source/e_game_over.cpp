@@ -73,5 +73,7 @@ void GameOver::update(Player &p) {
 
     if (key_hit(KEY_START))
       Scener::set(Global::s_game);
+    else if (key_hit(KEY_SELECT))
+      Scener::set(Global::s_menu);
   }
 }

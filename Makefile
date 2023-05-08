@@ -35,7 +35,7 @@ BUILD			:= build
 SOURCES		:= source source/engine
 INCLUDES	:= include include/engine
 DATA			:=
-MUSIC			:= 
+MUSIC			:= audio
 GRAPHICS	:= gfx
 
 #---------------------------------------------------------------------------------

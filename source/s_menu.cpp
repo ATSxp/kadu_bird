@@ -1,14 +1,19 @@
 #include <memory>
 #include <tonc.h>
+#include <maxmod.h>
 #include "../include/s_menu.hpp"
 #include "../include/global.hpp"
 #include "../include/e_player.hpp"
 #include "../include/map.hpp"
 #include "../include/buttons.hpp"
+#include "soundbank.h"
 
 #include "map_menu1.h"
 #include "map_menu2.h"
 #include "map_menu3.h"
+
+#include "map_select1.h"
+
 #include "gfx_menu_text.h"
 
 #define BG_SPEED 0x080
@@ -18,7 +23,16 @@ namespace Menu {
   int ii;
   int jumps;
   bool started, in_scene, in_menu;
-  FIXED t, bg_dy, kadu_dy;
+  FIXED t, bg_dy, kadu_dy, evy;
+  bool go_to_game;
+
+  mm_sound_effect snd_select{
+    SFX_SELECT,
+    0x0400,
+    0,
+    255,
+    128
+  };
 
   const SCR_ENTRY *maps[4]{
     NULL,
@@ -56,19 +70,33 @@ namespace Menu {
     T_setMode(0);
     T_initObjs();
 
+    REG_BLDCNT = BLD_ALL | BLD_WHITE;
+
     initIntro();
 
     t = 0x00;
     started = false;
     in_scene = true;
     in_menu = false;
+    go_to_game = false;
     bg_dy = BG_SPEED;
     kadu_dy = 0x00;
     jumps = 2;
+    evy = 0x080;
   }
 
   void update() {
     t += 0x0400;
+
+    if (in_scene)
+      evy -= 0x02;
+    else {
+      REG_BLDCNT &= ~BLD_WHITE;
+      REG_BLDCNT |= BLD_BLACK;
+    }
+
+    evy = clamp(evy, 0, 0x081);
+    REG_BLDY = BLDY_BUILD(evy >> 3);
 
     updateIntro();
     updateMenu();
@@ -83,6 +111,9 @@ namespace Menu {
   }
 
   void end() {
+    REG_BLDCNT = 0;
+    REG_BLDY = 0;
+
     for (ii = 0; ii < 3; ii++) {
       if (start_spr[ii]) {
         REM_SPR(start_spr[ii]);
@@ -103,10 +134,10 @@ namespace Menu {
 
     for (ii = 0; ii < 4; ii++) {
       if (maps[ii]) {
-        LZ77UnCompVram(tiles[ii], &tile8_mem[0][tile_ids[ii]]);
-
         bg[ii] = std::make_shared<Map>(ii, maps[ii], 32, 32, 0, 31 - ii, true);
         bg[ii]->setBpp(true);
+
+        LZ77UnCompVram(tiles[ii], &tile8_mem[bg[ii]->cbb][tile_ids[ii]]);
 
         bg[ii]->pos.x = -bg_init_pos[ii].x;
         bg[ii]->pos.y = -bg_init_pos[ii].y;
@@ -131,7 +162,15 @@ namespace Menu {
   }
 
   void updateIntro() {
-    if (started) return;
+    if (started && !in_menu) {
+      evy += 0x05;
+
+      if (!in_menu && evy >= 0x080) {
+        VBlankIntrDelay(20);
+        in_menu = true;
+        initMenu();
+      }
+    }
 
     if (!in_scene) {
       T_enableObjs();
@@ -143,14 +182,8 @@ namespace Menu {
         bg[ii]->pos.y = 0x0100; // Initial position
 
       if (key_hit(KEY_START)) {
-        VBlankIntrDelay(10);
         started = true;
-
-        if (!in_menu) {
-          in_menu = true;
-          initMenu();
-        }
-
+        mmEffectEx(&snd_select); // tmp
       }
 
     } else {
@@ -207,7 +240,7 @@ namespace Menu {
     T_enableObjs();
 
     tte_init_chr4c(
-        0, BG_CBB(0) | BG_SBB(31),
+        0, BG_CBB(1) | BG_SBB(31),
         SE_PALBANK(15),
         14, CLR_WHITE,
         &verdana10Font, (fnDrawg)chr4c_drawg_b1cts_fast
@@ -215,11 +248,15 @@ namespace Menu {
 
     tte_set_font_table(fonts);
 
+    LZ77UnCompVram(map_select1Pal, pal_bg_mem);
+    LZ77UnCompVram(map_select1Tiles, tile_mem);
+
+    bg[1] = std::make_shared<Map>(1, map_select1Map, 32, 32, 0, 29, true);
+
     btns = std::make_shared<Button>();
 
     btns->add("Play", [](void) {
-        VBlankIntrDelay(10);
-        Scener::set(Global::s_game);
+        go_to_game = true;
       }
     );
 
@@ -232,9 +269,19 @@ namespace Menu {
   void updateMenu() {
     if (!in_menu) return;
 
+    if (!go_to_game)
+      evy -= 0x05;
+    else
+      evy += 0x08;
+
+    if(evy >= 0x080 && go_to_game) {
+      VBlankIntrDelay(10);
+      Scener::set(Global::s_game);
+    }
+
     btns->setTextPos(
         25 + ( ( 40 * lu_cos(t) >> 8 ) >> 8 ),
-        6 << 3
+        12 << 3
       );
 
     btns->update();

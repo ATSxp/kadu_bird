@@ -11,7 +11,7 @@
 // ======= Prototypes ===========
 // ==============================
 
-INLINE void T_init();
+INLINE void T_init(fnptr isr);
 INLINE void T_update();
 INLINE void T_setMode(u16 mode);
 INLINE void T_enableBg(u16 bg);
@@ -23,9 +23,9 @@ INLINE void T_disableObjs();
 // ======= Functions ============
 // ==============================
 
-INLINE void T_init() {
+INLINE void T_init(fnptr isr) {
   irq_init(NULL);
-  irq_add(II_VBLANK, NULL);
+  irq_add(II_VBLANK, isr);
 }
 
 INLINE void T_update() {
