@@ -15,6 +15,8 @@ namespace Global {
 
   INLINE bool AABB(POINT32 p1, u32 w1, u32 h1, POINT32 p2, u32 w2, u32 h2);
 
+  void se_ballon(SCR_ENTRY *sbb, int x, int y, int w, int h, SCR_ENTRY se);
+
   extern Scener::Scene s_menu;
   extern Scener::Scene s_game;
   extern u32 seed_rand, record_point;

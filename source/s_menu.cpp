@@ -13,8 +13,10 @@
 #include "map_menu3.h"
 
 #include "map_select1.h"
+#include "map_bg_pic.h"
 
 #include "gfx_menu_text.h"
+#include "gfx_ballon1.h"
 
 #define BG_SPEED 0x080
 #define BG_GRAV float2fx(0.08f)
@@ -25,6 +27,9 @@ namespace Menu {
   bool started, in_scene, in_menu;
   FIXED t, bg_dy, kadu_dy, evy;
   bool go_to_game;
+
+  POINT32 b_pos;
+  FIXED bw, bh;
 
   mm_sound_effect snd_select{
     SFX_SELECT,
@@ -90,10 +95,8 @@ namespace Menu {
 
     if (in_scene)
       evy -= 0x02;
-    else {
-      REG_BLDCNT &= ~BLD_WHITE;
-      REG_BLDCNT |= BLD_BLACK;
-    }
+    else
+      REG_BLDCNT = BLD_ALL | BLD_BLACK;
 
     evy = clamp(evy, 0, 0x081);
     REG_BLDY = BLDY_BUILD(evy >> 3);
@@ -162,14 +165,20 @@ namespace Menu {
   }
 
   void updateIntro() {
-    if (started && !in_menu) {
-      evy += 0x05;
+    if (started) {
+      if (!in_menu)
+        evy += 0x05;
 
       if (!in_menu && evy >= 0x080) {
-        VBlankIntrDelay(20);
         in_menu = true;
+        VBlankIntrDelay(10);
         initMenu();
       }
+
+      for (ii = 0; ii < 4; ii++)
+        bg[ii]->pos.y = 0x0100; // Initial position
+
+      return;
     }
 
     if (!in_scene) {
@@ -187,7 +196,10 @@ namespace Menu {
       }
 
     } else {
-      if (key_hit(KEY_START) && in_scene) in_scene = false;
+      if (key_hit(KEY_START) && in_scene) {
+        evy = 0x00;
+        in_scene = false;
+      }
 
       if (bg[2]->pos.y <= 0x00) {
         T_enableBg(1);
@@ -221,8 +233,9 @@ namespace Menu {
   }
 
   void initMenu() {
-    RegisterRamReset(RESET_PALETTE);
-    RegisterRamReset(RESET_VRAM);
+    b_pos = {0, 3};
+    bw = 16 << 8;
+    bh = 0x00;
 
     const TFont *fonts[2] = {
       &verdana10Font,
@@ -245,29 +258,38 @@ namespace Menu {
         14, CLR_WHITE,
         &verdana10Font, (fnDrawg)chr4c_drawg_b1cts_fast
       );
+    pal_bg_bank[15][15] = CLR_GRAY;
 
     tte_set_font_table(fonts);
 
     LZ77UnCompVram(map_select1Pal, pal_bg_mem);
     LZ77UnCompVram(map_select1Tiles, tile_mem);
 
+    TONC_CPY(pal_bg_bank[1], map_bg_picPal);
+    TONC_CPY(&tile_mem[0][248], map_bg_picTiles);
+
+    TONC_CPY(pal_bg_bank[2], gfx_ballon1Pal);
+    TONC_CPY(&tile_mem[0][223], gfx_ballon1Tiles);
+
     bg[1] = std::make_shared<Map>(1, map_select1Map, 32, 32, 0, 29, true);
+    bg[2] = std::make_shared<Map>(2, nullptr, 32, 32, 0, 27, false);
+    bg[3] = std::make_shared<Map>(3, map_bg_picMap, 32, 32, 0, 24, false);
 
     btns = std::make_shared<Button>();
-
-    btns->add("Play", [](void) {
-        go_to_game = true;
-      }
-    );
-
+    btns->add("Play", [](void) {go_to_game = true;});
     btns->add("Options", NULL);
     btns->add("Extras", NULL);
 
     btns->space = 15;
+
   }
 
   void updateMenu() {
     if (!in_menu) return;
+    Global::se_ballon(se_mem[27], b_pos.x, b_pos.y, bw >> 8, bh >> 8, SE_ID(223) | SE_PALBANK(2));
+
+    bh += 0x040;
+    bh = clamp(bh, 0, 11 << 8);
 
     if (!go_to_game)
       evy -= 0x05;
@@ -279,12 +301,20 @@ namespace Menu {
       Scener::set(Global::s_game);
     }
 
+    tte_set_ink(14);
     btns->setTextPos(
         25 + ( ( 40 * lu_cos(t) >> 8 ) >> 8 ),
-        12 << 3
+        13 << 3
       );
 
     btns->update();
+
+    if (bh >= 10 << 8)
+      tte_write("#{ci:13;P:3,24}Play this game\n#{X:3}MOTHERFUCKER!!\n#{X:3};)");
+
+    bg[3]->pos.y = 0x04000;
+    bg[3]->move(0x080, 0x00);
+    bg[3]->update();
   }
 
 }

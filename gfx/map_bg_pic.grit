@@ -1,0 +1,5 @@
+#
+# Map Bg Picture:
+# SBB-layout | 32x32 | 4bpp Tiles
+#
+-gt -gB4 -pn 16 -m -ma 248 -mp 1 -mLs -mRftp
