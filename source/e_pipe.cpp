@@ -3,13 +3,13 @@
 #include "gfx_pipe.h"
 
 Pipe::Pipe(int x, int y, FIXED speed) : dx(speed) {
+  GRIT_CPY(pal_obj_bank[1], gfx_pipePal);
+  GRIT_CPY(&tile_mem[4][tid], gfx_pipeTiles);
+
   space_btw = static_cast<int>(h) + qran_range(64, 80);
 
   pos.x = x << 8;
   pos.y = y << 8;
-
-  TONC_CPY(pal_obj_bank[1], gfx_pipePal);
-  TONC_CPY(&tile_mem[4][tid], gfx_pipeTiles);
 
   for (ii = 0; ii < PIPE_SPR_COUNT; ii++) {
     spr[ii] = T_addObj(

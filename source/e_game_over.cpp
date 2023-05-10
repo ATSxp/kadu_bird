@@ -7,8 +7,8 @@
 #define HAND_CENTER_POS (SCREEN_WIDTH - 32) / 2
 
 GameOver::GameOver() {
-  TONC_CPY(pal_obj_bank[4], gfx_handsPal);
-  TONC_CPY(&tile_mem[4][tid_hand], gfx_handsTiles);
+  GRIT_CPY(pal_obj_bank[4], gfx_handsPal);
+  GRIT_CPY(&tile_mem[4][tid_hand], gfx_handsTiles);
 
   for (ii = 0; ii < static_cast<int>(hand_spr.size()); ii++) {
     hand_spr[ii] = T_addObj(

@@ -77,11 +77,11 @@ namespace Game {
     pal_bg_bank[15][3] = CLR_WHITE;
     pal_bg_bank[15][4] = CLR_RED;
 
-    TONC_CPY(pal_obj_bank[2], gfx_boardPal);
-    TONC_CPY(&tile_mem[4][BOARD_TID], gfx_boardTiles);
+    GRIT_CPY(pal_obj_bank[2], gfx_boardPal);
+    GRIT_CPY(&tile_mem[4][BOARD_TID], gfx_boardTiles);
 
-    TONC_CPY(pal_obj_bank[3], gfx_hpPal);
-    TONC_CPY(&tile_mem[4][HP_TID], gfx_hpTiles);
+    GRIT_CPY(pal_obj_bank[3], gfx_hpPal);
+    GRIT_CPY(&tile_mem[4][HP_TID], gfx_hpTiles);
 
     p = std::make_shared<Player>();
 

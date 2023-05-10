@@ -5,6 +5,7 @@
 #include "engine/gba.h"
 #include "scener.hpp"
 
+// SLOW!! GRIT_CPY is bestter
 #define TONC_CPY(dst, src) tonccpy(dst, src, src##Len)
 
 namespace Global {
@@ -20,6 +21,7 @@ namespace Global {
   extern Scener::Scene s_menu;
   extern Scener::Scene s_game;
   extern u32 seed_rand, record_point;
+  extern int times[5];
 
   extern TSprite *hp_spr[3];
 

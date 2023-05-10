@@ -13,8 +13,8 @@ Player::Player() {
   pos.x = (w << 1) << 8;
   pos.y = ((SCREEN_HEIGHT - h) >> 1) << 8;
 
-  TONC_CPY(pal_obj_mem, gfx_kaduPal);
-  TONC_CPY(tile_mem[4], gfx_kaduTiles);
+  GRIT_CPY(pal_obj_mem, gfx_kaduPal);
+  GRIT_CPY(tile_mem[4], gfx_kaduTiles);
 
   for (ii = 0; ii < PLAYER_SPR_COUNT; ii++) {
     spr[ii] = T_addObj(

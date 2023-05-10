@@ -4,6 +4,7 @@ namespace Global {
   TSprite *hp_spr[3] = {nullptr};
   u32 seed_rand{0};
   u32 record_point{0};
+  int times[5];
 
   void se_ballon(SCR_ENTRY *sbb, int x, int y, int w, int h, SCR_ENTRY se) {
     u16 id = BFN_GET(se, SE_ID);

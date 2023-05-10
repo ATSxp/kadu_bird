@@ -18,7 +18,7 @@ Map::Map(u16 bg, const SCR_ENTRY *map, u32 w, u32 h, u16 cbb, u16 sbb, bool comp
     if (compressed)
       LZ77UnCompVram(map, &se_mem[sbb]);
     else
-      tonccpy(&se_mem[sbb], map, (w << 3) << 3);
+      memcpy16(&se_mem[sbb], map, (w << 3) << 3);
   }
 
   REG_BG_OFS[bg].x = 0x00;
@@ -36,7 +36,7 @@ Map::Map(u16 bg, const SCR_ENTRY *map, u32 w, u32 h, u16 cbb, u16 sbb, bool comp
 Map::~Map() {
   CBB_CLEAR(cbb);
   SBB_CLEAR(sbb);
-  REG_BGCNT[bg] = 0x00;
+  REG_BGCNT[bg] = 0;
   T_disableBg(bg);
 }
 
