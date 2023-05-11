@@ -6,7 +6,7 @@ namespace Global {
   u32 record_point{0};
   int times[5];
 
-  void se_ballon(SCR_ENTRY *sbb, int x, int y, int w, int h, SCR_ENTRY se) {
+  RECT se_ballon(SCR_ENTRY *sbb, int x, int y, int w, int h, SCR_ENTRY se) {
     u16 id = BFN_GET(se, SE_ID);
     u16 pb = SE_PALBANK(BFN_GET(se, SE_PALBANK));
 
@@ -23,5 +23,7 @@ namespace Global {
     se_plot(sbb, x + (w-2), y, id | pb | SE_HFLIP);
     se_plot(sbb, x, y + (h-2), id | pb | SE_VFLIP);
     se_plot(sbb, x + (w-2), y + (h-2), id | pb | SE_HFLIP | SE_VFLIP);
+
+    return (RECT){x, y, x + (w - 1), y + (h - 1)};
   }
 }

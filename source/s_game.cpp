@@ -74,13 +74,8 @@ namespace Game {
         CLR_BLACK, 
         &verdana11Font, (fnDrawg)chr4c_drawg_b1cts_fast
       );
-    pal_bg_bank[15][3] = CLR_WHITE;
-    pal_bg_bank[15][4] = CLR_RED;
 
-    GRIT_CPY(pal_obj_bank[2], gfx_boardPal);
     GRIT_CPY(&tile_mem[4][BOARD_TID], gfx_boardTiles);
-
-    GRIT_CPY(pal_obj_bank[3], gfx_hpPal);
     GRIT_CPY(&tile_mem[4][HP_TID], gfx_hpTiles);
 
     p = std::make_shared<Player>();
@@ -97,13 +92,18 @@ namespace Game {
         );
     }
 
-    LZ77UnCompVram(map_bg1Pal, pal_bg_mem);
     for (ii = 0; ii < 3; ii++) {
       LZ77UnCompVram(tiles[ii], &tile_mem[0][ tids[ii] ]);
 
-      bg[ii] = std::make_shared<Map>(ii + 1, maps[ii], 64, 32, 0, 30 - (2 * ii), true);
+      bg[ii] = std::make_shared<Map>(ii + 1, maps[ii], 64, 32, 0, 30 - (ii << 1), true);
       bg[ii]->move(bg_speeds[ii], 0x00);
     }
+
+    LZ77UnCompVram(map_bg1Pal, pal_bg_mem);
+    GRIT_CPY(pal_obj_bank[2], gfx_boardPal);
+    GRIT_CPY(pal_obj_bank[3], gfx_hpPal);
+    pal_bg_bank[15][3] = CLR_WHITE;
+    pal_bg_bank[15][4] = CLR_RED;
 
     paused = false;
     game_over = false;
@@ -126,6 +126,7 @@ namespace Game {
 
     // Fade background and pipes
     REG_BLDY = BLDY_BUILD(evy >> 3);
+    evy = clamp(evy, 0, 0x081);
 
     if (!paused)
       clr_fade(gfx_pipePal, CLR_BLACK, pal_obj_bank[1], 16, evy >> 2);
@@ -133,10 +134,12 @@ namespace Game {
     if (p->dead) {
       REG_BLDCNT &= ~BLD_OBJ;
       evy += 4;
-      evy = clamp(evy, 0, 0x081);
 
-      if (evy >= 0x080)
+      if (evy >= 0x080) {
+        bg[0]->move(0x00, 0x00);
+        bg[0]->pos.x = 0x00;
         diePipes();
+      }
 
       tte_erase_line();
       hideHud();
@@ -183,6 +186,9 @@ namespace Game {
   }
 
   void end(void) {
+    RegisterRamReset(RESET_PALETTE);
+    RegisterRamReset(RESET_VRAM);
+
     tte_erase_screen();
     tte_set_pos(0, 0);
 
@@ -199,9 +205,6 @@ namespace Game {
     for (ii = 0; ii < 2; ii++) {
       REM_SPR(board_spr[ii]);
     }
-
-    RegisterRamReset(RESET_PALETTE);
-    RegisterRamReset(RESET_VRAM);
   }
 
   void spawnPipes() {

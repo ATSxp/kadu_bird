@@ -3,7 +3,6 @@
 #include "gfx_pipe.h"
 
 Pipe::Pipe(int x, int y, FIXED speed) : dx(speed) {
-  GRIT_CPY(pal_obj_bank[1], gfx_pipePal);
   GRIT_CPY(&tile_mem[4][tid], gfx_pipeTiles);
 
   space_btw = static_cast<int>(h) + qran_range(64, 80);
@@ -18,6 +17,7 @@ Pipe::Pipe(int x, int y, FIXED speed) : dx(speed) {
       );
   }
 
+  GRIT_CPY(pal_obj_bank[1], gfx_pipePal);
   mgba_printf(MGBA_LOG_DEBUG, "Pipe created");
 }
 

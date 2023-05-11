@@ -16,7 +16,6 @@
 #include "map_bg_pic.h"
 
 #include "gfx_menu_text.h"
-#include "gfx_ballon1.h"
 
 #define BG_SPEED 0x080
 #define BG_GRAV float2fx(0.08f)
@@ -24,7 +23,7 @@
 namespace Menu {
   int ii;
   int jumps;
-  bool started, in_scene, in_menu;
+  bool started{false}, in_scene{true}, in_menu;
   FIXED t, bg_dy, kadu_dy, evy;
   bool go_to_game;
 
@@ -39,7 +38,7 @@ namespace Menu {
     128
   };
 
-  std::shared_ptr<Map> bg[4]{nullptr};
+  std::shared_ptr<Map> bg[3]{nullptr};
   std::shared_ptr<Button> btns{nullptr};
   TSprite *start_spr[3]{nullptr};
 
@@ -53,13 +52,12 @@ namespace Menu {
     T_setMode(0);
     T_initObjs();
 
-    REG_BLDCNT = BLD_ALL | BLD_WHITE;
+    if (!started)
+      REG_BLDCNT = BLD_ALL | BLD_WHITE;
 
     initIntro();
 
     t = 0x00;
-    started = false;
-    in_scene = true;
     in_menu = false;
     go_to_game = false;
     bg_dy = BG_SPEED;
@@ -82,11 +80,8 @@ namespace Menu {
     updateIntro();
     updateMenu();
 
-    for (ii = 0; ii < 4; ii++) {
-      if (bg[ii]) {
-        bg[ii]->update();
-      }
-    }
+    for (ii = 0; ii < 3; ii++)
+      bg[ii]->update();
 
     T_updateObjs(FALSE);
   }
@@ -103,7 +98,7 @@ namespace Menu {
 
     btns = nullptr;
 
-    for (ii = 0; ii < 4; ii++)
+    for (ii = 0; ii < 3; ii++)
       bg[ii] = nullptr;
 
     RegisterRamReset(RESET_PALETTE);
@@ -130,29 +125,31 @@ namespace Menu {
       {0x00, -(48 << 8)},
     };
 
-    LZ77UnCompVram(map_menu1Pal, pal_bg_mem);
-
     for (ii = 0; ii < 3; ii++) {
-      if (maps[ii]) {
-        bg[ii] = std::make_shared<Map>(ii + 1, maps[ii], 32, 32, 0, 31 - (ii << 1), true);
-        bg[ii]->setBpp(true);
+      bg[ii] = std::make_shared<Map>(ii + 1, maps[ii], 32, 32, 0, 31 - (ii << 1), true);
+      bg[ii]->setBpp(true);
 
-        LZ77UnCompVram(tiles[ii], &tile8_mem[bg[ii]->cbb][tile_ids[ii]]);
+      LZ77UnCompVram(tiles[ii], &tile8_mem[bg[ii]->cbb][tile_ids[ii]]);
 
-        bg[ii]->pos.x = -bg_init_pos[ii].x;
-        bg[ii]->pos.y = -bg_init_pos[ii].y;
-      }
+      bg[ii]->pos.x = -bg_init_pos[ii].x;
+      bg[ii]->pos.y = -bg_init_pos[ii].y;
 
-      if (ii < 2) {
+      if (ii > 1) {
         REG_BGCNT[ii] &= ~BG_REG_32x32;
         REG_BGCNT[ii] |= BG_REG_32x64;
       }
     }
 
-    T_disableBg(1);
+    // Clear part of Map from BG 1
+    memset16(&se_mem[bg[0]->sbb][bg[0]->cbb], 0x00, 202);
+    memset16(&se_mem[bg[0]->sbb][bg[0]->cbb + 210], 0x00, 2);
 
-    GRIT_CPY(pal_obj_mem, gfx_menu_textPal);
+    LZ77UnCompVram(map_menu1Pal, pal_bg_mem);
+
+    T_disableBg(1); // Hide BG 1 for intro
+
     GRIT_CPY(tile_mem[4], gfx_menu_textTiles);
+    GRIT_CPY(pal_obj_mem, gfx_menu_textPal);
 
     for (ii = 0; ii < 3; ii++) {
       start_spr[ii] = T_addObj(
@@ -180,6 +177,8 @@ namespace Menu {
 
     if (!in_scene) {
       T_enableObjs();
+
+      LZ77UnCompVram(map_menu1Map, &se_mem[bg[0]->sbb][bg[0]->cbb]);
 
       if (!BIT_EQ(REG_DISPCNT, 1 << 8)) 
         T_enableBg(1);
@@ -230,6 +229,9 @@ namespace Menu {
   }
 
   void initMenu() {
+    RegisterRamReset(RESET_PALETTE);
+    RegisterRamReset(RESET_VRAM);
+
     const TFont *fonts[2] = {
       &verdana10Font,
       &verdana9Font
@@ -246,6 +248,12 @@ namespace Menu {
       REM_SPR(start_spr[ii]);
     }
 
+    bg[0] = std::make_shared<Map>(1, map_select1Map, 32, 32, 0, 29, true);
+    bg[1] = std::make_shared<Map>(2, nullptr, 32, 32, 0, 27, false);
+    bg[2] = std::make_shared<Map>(3, map_bg_picMap, 32, 32, 0, 25, false);
+
+    btns = std::make_shared<Button>();
+
     T_enableBg(0);
     T_enableObjs();
 
@@ -259,41 +267,27 @@ namespace Menu {
 
     tte_set_font_table(fonts);
 
-    LZ77UnCompVram(map_select1Pal, pal_bg_mem);
     LZ77UnCompVram(map_select1Tiles, tile_mem);
-
-    GRIT_CPY(pal_bg_bank[1], map_bg_picPal);
     GRIT_CPY(&tile_mem[0][248], map_bg_picTiles);
 
-    GRIT_CPY(pal_bg_bank[2], gfx_ballon1Pal);
-    GRIT_CPY(&tile_mem[0][223], gfx_ballon1Tiles);
-
-    bg[0] = std::make_shared<Map>(1, map_select1Map, 32, 32, 0, 29, true);
-    bg[1] = std::make_shared<Map>(2, nullptr, 32, 32, 0, 27, false);
-    bg[2] = std::make_shared<Map>(3, map_bg_picMap, 32, 32, 0, 25, false);
-
-    btns = std::make_shared<Button>();
-    btns->add("Play", [](void) {go_to_game = true;});
-    // btns->add("Options", NULL);
-    // btns->add("Extras", NULL);
+    btns->add("Play", [](void) {if (evy <= 0x00) go_to_game = true;});
+    btns->add("Options", NULL);
+    btns->add("Extras", NULL);
 
     btns->space = 15;
+
+    LZ77UnCompVram(map_select1Pal, pal_bg_mem);
+    GRIT_CPY(pal_bg_bank[1], map_bg_picPal);
   }
 
   void updateMenu() {
     if (!in_menu) return;
-    Global::se_ballon(se_mem[bg[1]->sbb], b_pos.x, b_pos.y, bw >> 8, bh >> 8, SE_ID(223) | SE_PALBANK(2));
 
-    bh += 0x040;
-    bh = clamp(bh, 0, 11 << 8);
-
-    if (!go_to_game)
-      evy -= 0x05;
-    else
-      evy += 0x08;
+    if (!go_to_game) evy -= 0x05;
+    else evy += 0x08;
 
     if(evy >= 0x080 && go_to_game) {
-      VBlankIntrDelay(10);
+      VBlankIntrDelay(20);
       Scener::set(Global::s_game);
     }
 
@@ -304,9 +298,6 @@ namespace Menu {
       );
 
     btns->update();
-
-    if (bh >= 10 << 8)
-      tte_write("#{ci:13;P:3,24}Play this game\n#{X:3}MOTHERFUCKER!!\n#{X:3};)");
 
     bg[2]->pos.y = 0x04000;
     bg[2]->move(0x080, 0x00);

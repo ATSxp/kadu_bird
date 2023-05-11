@@ -12,11 +12,11 @@ class GameOver {
     bool record_breaked{false};
 
     CSTR txt{
-      "#{P:84,120;ci:4}Game over"
-      "#{P:92,136;ci:3}[START]"
+      "#{P:60,124;ci:4}Kadu got caught"
+      // "#{P:92,136;ci:3}[START]"
     };
 
-    cu16 tid_hand{71};
+    cu16 tid_hand{75};
     std::array<const FIXED, 2> hand_minus{-(8 << 8), (8 << 8)};
 
     POINT32 hand_pos[2]{
