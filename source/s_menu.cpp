@@ -52,9 +52,6 @@ namespace Menu {
     T_setMode(0);
     T_initObjs();
 
-    if (!started)
-      REG_BLDCNT = BLD_ALL | BLD_WHITE;
-
     initIntro();
 
     t = 0x00;
@@ -77,6 +74,8 @@ namespace Menu {
     evy = clamp(evy, 0, 0x081);
     REG_BLDY = BLDY_BUILD(evy >> 3);
 
+    tte_erase_screen();
+
     updateIntro();
     updateMenu();
 
@@ -87,8 +86,8 @@ namespace Menu {
   }
 
   void end() {
-    REG_BLDCNT = 0;
-    REG_BLDY = 0;
+    RegisterRamReset(RESET_PALETTE);
+    RegisterRamReset(RESET_VRAM);
 
     for (ii = 0; ii < 3; ii++) {
       if (start_spr[ii]) {
@@ -100,9 +99,6 @@ namespace Menu {
 
     for (ii = 0; ii < 3; ii++)
       bg[ii] = nullptr;
-
-    RegisterRamReset(RESET_PALETTE);
-    RegisterRamReset(RESET_VRAM);
   }
 
   void initIntro() {
@@ -124,6 +120,9 @@ namespace Menu {
       {0x00, -(95 << 8)},
       {0x00, -(48 << 8)},
     };
+
+    if (!started)
+      REG_BLDCNT = BLD_ALL | BLD_WHITE;
 
     for (ii = 0; ii < 3; ii++) {
       bg[ii] = std::make_shared<Map>(ii + 1, maps[ii], 32, 32, 0, 31 - (ii << 1), true);

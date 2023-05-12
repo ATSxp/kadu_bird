@@ -12,6 +12,8 @@ Button::Button(u16 tid, u16 pb) {
       OBJ_16X8,
       tid, pb, 0, NULL
     );
+
+  T_hideObj(glass_spr);
 }
 
 Button::~Button() {
@@ -34,7 +36,8 @@ void Button::update() {
 }
 
 void Button::show() {
-  tte_erase_screen();
+  T_showObj(glass_spr);
+
   for (ii = 0; ii < static_cast<int>(btns.size()); ii++) {
     tte_set_pos(txt_pos.x, txt_pos.y + ii * space);
     tte_write(btns[ii].name.c_str());

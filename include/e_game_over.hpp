@@ -1,20 +1,26 @@
 #ifndef __E_GAME_OVER_HPP__
 #define __E_GAME_OVER_HPP__
 
+#include <memory>
 #include <array>
 #include "engine/gba.h"
 #include "e_player.hpp"
+#include "buttons.hpp"
 
 class GameOver {
   private:
     int ii;
     bool show_txt{false};
     bool record_breaked{false};
+    bool show_menu{false};
 
-    CSTR txt{
-      "#{P:60,124;ci:4}Kadu got caught"
-      // "#{P:92,136;ci:3}[START]"
-    };
+    std::shared_ptr<Button> btn = nullptr;
+
+    // Ballon
+    int bw{16};
+    FIXED bh{0};
+
+    CSTR txt{"#{P:60,124}Kadu got caught"};
 
     cu16 tid_hand{75};
     std::array<const FIXED, 2> hand_minus{-(8 << 8), (8 << 8)};

@@ -1,5 +1,6 @@
 #include <memory>
 #include <vector>
+#include <array>
 #include <string.h>
 #include <tonc.h>
 #include "../include/s_game.hpp"
@@ -16,6 +17,7 @@
 #include "map_bg1.h"
 #include "map_bg2.h"
 #include "map_bg3.h"
+#include "map_transition.h"
 
 #include "../include/verdana11.h"
 
@@ -27,13 +29,14 @@ namespace Game {
   size_t kk;
 
   std::shared_ptr<Player> p{nullptr};
-  std::shared_ptr<Map> bg[3]{nullptr, nullptr, nullptr};
+  std::array<std::shared_ptr<Map>, 3> bg{nullptr, nullptr, nullptr};
   std::shared_ptr<GameOver> gmovr{nullptr};
   TSprite *board_spr[2]{nullptr, nullptr};
   std::vector<Pipe> pipe_l;
   FIXED pipe_t;
   u8 evy;
   bool paused, game_over;
+  int bg_size = static_cast<int>(bg.size());
 
   void spawnPipes();
   void diePipes();
@@ -41,6 +44,10 @@ namespace Game {
   void showHud();
 
   void init(void) {
+    const TFont *fonts[2]{
+      &verdana9Font, &verdana9bFont
+    };
+
     constexpr SCR_ENTRY *maps[3] = {
       (SCR_ENTRY*)map_bg1Map,
       (SCR_ENTRY*)map_bg2Map,
@@ -74,6 +81,7 @@ namespace Game {
         CLR_BLACK, 
         &verdana11Font, (fnDrawg)chr4c_drawg_b1cts_fast
       );
+    tte_set_font_table(fonts);
 
     GRIT_CPY(&tile_mem[4][BOARD_TID], gfx_boardTiles);
     GRIT_CPY(&tile_mem[4][HP_TID], gfx_hpTiles);
@@ -92,7 +100,7 @@ namespace Game {
         );
     }
 
-    for (ii = 0; ii < 3; ii++) {
+    for (ii = 0; ii < bg_size; ii++) {
       LZ77UnCompVram(tiles[ii], &tile_mem[0][ tids[ii] ]);
 
       bg[ii] = std::make_shared<Map>(ii + 1, maps[ii], 64, 32, 0, 30 - (ii << 1), true);
@@ -112,10 +120,9 @@ namespace Game {
   }
 
   void update(void) {
-    CSTR board_txt = "#{es;P:6,1}%06d";
-    char dst_board[strlen(board_txt)];
+    CSTR board_txt = "#{es;ci:5;P:6,1}%06d";
+    char dst_board[strlen(board_txt) - 16];
 
-    tte_set_ink(2);
     posprintf(dst_board, board_txt, p->points);
     tte_write(dst_board);
 
@@ -125,8 +132,8 @@ namespace Game {
       T_setTileObj(Global::hp_spr[p->hp], HP_TID + 4);
 
     // Fade background and pipes
+    evy = clamp(evy, 0x00, 0x081);
     REG_BLDY = BLDY_BUILD(evy >> 3);
-    evy = clamp(evy, 0, 0x081);
 
     if (!paused)
       clr_fade(gfx_pipePal, CLR_BLACK, pal_obj_bank[1], 16, evy >> 2);
@@ -154,7 +161,6 @@ namespace Game {
 
     if (paused && !p->dead) {
       evy = 0x040;
-
       tte_write("#{el;P:96,72;ci:3}Paused");
 
       hideHud();
@@ -167,7 +173,7 @@ namespace Game {
       p->update();
       spawnPipes();
 
-      for (ii = 0; ii < 3; ii++)
+      for (ii = 0; ii < bg_size; ii++)
         bg[ii]->update();
 
       // Update Pipes
@@ -180,6 +186,7 @@ namespace Game {
           pipe_l[kk].PipeVsPlayer(*p);
         }
       }
+
     }
 
     T_updateObjs(FALSE);
@@ -189,6 +196,9 @@ namespace Game {
     RegisterRamReset(RESET_PALETTE);
     RegisterRamReset(RESET_VRAM);
 
+    REG_BLDCNT = 0;
+    REG_BLDY = 0;
+
     tte_erase_screen();
     tte_set_pos(0, 0);
 
@@ -197,7 +207,7 @@ namespace Game {
 
     diePipes();
 
-    for (ii = 0; ii < 3; ii++) {
+    for (ii = 0; ii < bg_size; ii++) {
       REM_SPR(Global::hp_spr[ii]);
       bg[ii] = nullptr;
     }

@@ -4,6 +4,7 @@
 
 #include "gfx_hands.h"
 #include "gfx_ballon2.h"
+#include "../include/verdana11.h"
 
 #define HAND_CENTER_POS (SCREEN_WIDTH - 32) / 2
 
@@ -20,6 +21,21 @@ GameOver::GameOver() {
 
   T_flipObj(hand_spr[1], TRUE, FALSE);
 
+  btn = std::make_shared<Button>(96, 5);
+
+  btn->add("Try again", [](void) {
+      Scener::set(Global::s_game);
+    }
+  );
+
+  btn->add("Main Menu", [](void) {
+      Scener::set(Global::s_menu);
+    }
+  );
+
+  btn->setTextPos(20, (2 << 3) + 2);
+  btn->space = 14;
+
   GRIT_CPY(pal_obj_bank[4], gfx_handsPal);
   GRIT_CPY(pal_bg_bank[1], gfx_ballon2Pal);
 }
@@ -34,7 +50,7 @@ void GameOver::update(Player &p) {
   char dst[strlen(txt)];
   FIXED sx = ((SCREEN_WIDTH - p.w) >> 1) << 8, sy = ((SCREEN_HEIGHT - p.h) >> 1) << 8;
 
-  CSTR point_txt ="#{P:4,4;ci:%d}Points: %06d"; 
+  CSTR point_txt ="#{P:4,2}Points: %06d"; 
   char d[43];
 
   FIXED dx {ArcTan(sx - p.pos.x) >> 3};
@@ -62,6 +78,8 @@ void GameOver::update(Player &p) {
   }
 
   if (show_txt) {
+    Global::seed_rand = p.points;
+
     SBB_CLEAR(30);
     REG_BLDCNT &= ~BLD_BG1;
     REG_BG1CNT = BG_CBB(0) | BG_SBB(30) | BG_PRIO(2);
@@ -71,24 +89,44 @@ void GameOver::update(Player &p) {
 
     tte_erase_screen();
 
-    posprintf(d, point_txt, 5, p.points);
-    posprintf(dst, txt, p.points);
+    Global::se_ballon(&se_mem[30][0], 0, 0, 31, 3, SE_ID(279) | SE_PALBANK(1));
+    posprintf(d, point_txt, p.points);
 
-    Global::se_ballon(&se_mem[30][0], 0, 0, 15, 4, SE_ID(279) | SE_PALBANK(1));
-    Global::se_ballon(&se_mem[30][0], 6, 15, 17, 4, SE_ID(279) | SE_PALBANK(1));
+    // Global::se_ballon(&se_mem[30][0], 6, 15, 17, 4, SE_ID(279) | SE_PALBANK(1));
+    // posprintf(dst, txt);
 
+    tte_set_ink(5);
+    tte_set_font(&verdana9bFont);
     tte_write(d);
-    tte_write(dst);
+
+    // if (!show_menu) {
+    //   tte_set_ink(4);
+    //   tte_set_font(&verdana11Font);
+    //   tte_write(dst);
+    // }
 
     if (record_breaked) {
       Global::record_point = p.points;
-      tte_write("#{P:4,44;ci:4}New Record!!");
-      Global::se_ballon(&se_mem[30][0], 0, 5, 13, 4, SE_ID(279) | SE_PALBANK(1));
+      // tte_write("#{P:4,44}New Record!!");
+      // Global::se_ballon(&se_mem[30][0], 0, 5, 13, 4, SE_ID(279) | SE_PALBANK(1));
     }
 
-    if (key_hit(KEY_START))
-      Scener::set(Global::s_game);
-    else if (key_hit(KEY_SELECT))
-      Scener::set(Global::s_menu);
+    if (key_hit(KEY_ACCEPT))
+      show_menu = true;
+  }
+
+  if (show_menu) {
+    int h{(bh >> 8) >> 3};
+    int max_h{int2fx(5 << 3)};
+
+    Global::se_ballon(&se_mem[30][0], 0, 2, bw, h, SE_ID(279) | SE_PALBANK(1));
+
+    tte_set_ink(5);
+    tte_set_font(&verdana10Font);
+    if (bh >= max_h)
+      btn->update();
+
+    bh += 0x180;
+    bh = clamp(bh, 0x00, max_h + 0x0100);
   }
 }
