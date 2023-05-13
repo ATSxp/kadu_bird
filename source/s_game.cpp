@@ -196,7 +196,6 @@ namespace Game {
     RegisterRamReset(RESET_PALETTE);
     RegisterRamReset(RESET_VRAM);
 
-    REG_BLDCNT = 0;
     REG_BLDY = 0;
 
     tte_erase_screen();
@@ -210,11 +209,10 @@ namespace Game {
     for (ii = 0; ii < bg_size; ii++) {
       REM_SPR(Global::hp_spr[ii]);
       bg[ii] = nullptr;
-    }
-
-    for (ii = 0; ii < 2; ii++) {
+      if (ii > 2) break;
       REM_SPR(board_spr[ii]);
     }
+
   }
 
   void spawnPipes() {
@@ -238,19 +236,20 @@ namespace Game {
   }
 
   void hideHud() {
-    for (ii = 0; ii < 3; ii++)
+    for (ii = 0; ii < 3; ii++) {
       T_hideObj(Global::hp_spr[ii]);
-
-    for (ii = 0; ii < 2; ii++)
+      if (ii > 2) break;
       T_hideObj(board_spr[ii]);
+    }
+
   }
 
   void showHud() {
-    for (ii = 0; ii < 3; ii++)
+    for (ii = 0; ii < 3; ii++) {
       T_showObj(Global::hp_spr[ii]);
-
-    for (ii = 0; ii < 2; ii++)
+      if (ii > 2) break;
       T_showObj(board_spr[ii]);
+    }
   }
 
 }

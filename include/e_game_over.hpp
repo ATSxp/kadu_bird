@@ -13,14 +13,10 @@ class GameOver {
     bool show_txt{false};
     bool record_breaked{false};
     bool show_menu{false};
+    bool play_effect{false};
 
     std::shared_ptr<Button> btn = nullptr;
-
-    // Ballon
-    int bw{16};
     FIXED bh{0};
-
-    CSTR txt{"#{P:60,124}Kadu got caught"};
 
     cu16 tid_hand{75};
     std::array<const FIXED, 2> hand_minus{-(8 << 8), (8 << 8)};

@@ -1,3 +1,4 @@
+#include <maxmod.h>
 #include "../include/e_pipe.hpp"
 
 #include "gfx_pipe.h"
@@ -64,6 +65,7 @@ void Pipe::PipeVsPlayer(Player &p) {
   if (p.dead) return;
 
   if ((up_pipe || down_pipe) && !p.damaged) {
+    mmEffectEx(&Global::snd_hit);
     p.damaged = true;
     p.hp--;
   }

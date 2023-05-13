@@ -1,3 +1,4 @@
+#include <maxmod.h>
 #include "../include/e_player.hpp"
 
 #include "gfx_kadu.h"
@@ -7,7 +8,9 @@
 #define PLAYER_GRAVITY float2fx(0.15f)
 #define PLAYER_JUMP 0x0300
 
-Player::Player() {
+Player::Player(bool show) {
+  if (!show) return;
+
   Global::SprBase *b = p_base_spr;
 
   pos.x = (w << 1) << 8;
@@ -62,7 +65,10 @@ void Player::update() {
     }
   }
 
-  if (key_hit(KEY_A) && !dead) dy = -PLAYER_JUMP;
+  if (key_hit(KEY_A) && !dead) {
+    mmEffectEx(&Global::snd_jump);
+    dy = -PLAYER_JUMP;
+  }
 
   if (dy < 0x00 && !damaged) setTile(PLAYER_SPR_TILES);
   else if (damaged) setTile(PLAYER_SPR_TILES << 1);

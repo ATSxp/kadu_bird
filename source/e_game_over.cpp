@@ -1,3 +1,4 @@
+#include <maxmod.h>
 #include <string.h>
 #include "../include/e_game_over.hpp"
 #include "../include/global.hpp"
@@ -47,7 +48,6 @@ GameOver::~GameOver() {
 }
 
 void GameOver::update(Player &p) {
-  char dst[strlen(txt)];
   FIXED sx = ((SCREEN_WIDTH - p.w) >> 1) << 8, sy = ((SCREEN_HEIGHT - p.h) >> 1) << 8;
 
   CSTR point_txt ="#{P:4,2}Points: %06d"; 
@@ -69,7 +69,14 @@ void GameOver::update(Player &p) {
     if (ii == 0) {
       if ((hand_pos[ii].x >> 8) > HAND_CENTER_POS + (hand_minus[ii] >> 8)) {
         show_txt = true;
+
         hand_pos[ii].x = (HAND_CENTER_POS << 8) + hand_minus[ii];
+
+        if (!play_effect) {
+          play_effect = true;
+          mmEffectEx(&Global::snd_hand_smash);
+        }
+
       }
     } else {
       if ((hand_pos[ii].x >> 8) < HAND_CENTER_POS + (hand_minus[ii] >> 8))
@@ -78,8 +85,6 @@ void GameOver::update(Player &p) {
   }
 
   if (show_txt) {
-    Global::seed_rand = p.points;
-
     SBB_CLEAR(30);
     REG_BLDCNT &= ~BLD_BG1;
     REG_BG1CNT = BG_CBB(0) | BG_SBB(30) | BG_PRIO(2);
@@ -92,23 +97,16 @@ void GameOver::update(Player &p) {
     Global::se_ballon(&se_mem[30][0], 0, 0, 31, 3, SE_ID(279) | SE_PALBANK(1));
     posprintf(d, point_txt, p.points);
 
-    // Global::se_ballon(&se_mem[30][0], 6, 15, 17, 4, SE_ID(279) | SE_PALBANK(1));
-    // posprintf(dst, txt);
-
     tte_set_ink(5);
     tte_set_font(&verdana9bFont);
     tte_write(d);
 
-    // if (!show_menu) {
-    //   tte_set_ink(4);
-    //   tte_set_font(&verdana11Font);
-    //   tte_write(dst);
-    // }
-
     if (record_breaked) {
       Global::record_point = p.points;
-      // tte_write("#{P:4,44}New Record!!");
-      // Global::se_ballon(&se_mem[30][0], 0, 5, 13, 4, SE_ID(279) | SE_PALBANK(1));
+      Global::se_ballon(&se_mem[30][0], 18, 2, 13, 4, SE_ID(279) | SE_PALBANK(1));
+
+      tte_set_font(&verdana11Font);
+      tte_write("#{ci:4;P:147,20}New Record!!");
     }
 
     if (key_hit(KEY_ACCEPT))
@@ -119,14 +117,14 @@ void GameOver::update(Player &p) {
     int h{(bh >> 8) >> 3};
     int max_h{int2fx(5 << 3)};
 
-    Global::se_ballon(&se_mem[30][0], 0, 2, bw, h, SE_ID(279) | SE_PALBANK(1));
+    Global::se_ballon(&se_mem[30][0], 0, 2, 11, h, SE_ID(279) | SE_PALBANK(1));
 
     tte_set_ink(5);
     tte_set_font(&verdana10Font);
     if (bh >= max_h)
       btn->update();
 
-    bh += 0x180;
+    bh += 0x280;
     bh = clamp(bh, 0x00, max_h + 0x0100);
   }
 }

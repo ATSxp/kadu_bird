@@ -6,13 +6,13 @@
 int main () {
   mgba_open();
   T_init(mmVBlank);
-
   mmInitDefault((mm_addr)soundbank_bin, 8);
 
   Scener::set(Global::s_menu);
 
   while(true) {
-    mmFrame();
+    if (Global::sound)
+      mmFrame();
     T_update();
     Scener::update();
     Global::seed_rand++;

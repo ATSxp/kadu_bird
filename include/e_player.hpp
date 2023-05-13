@@ -32,10 +32,10 @@ class Player {
     u32 w{24}, h{24};
     bool dead{false};
     TSprite *spr[PLAYER_SPR_COUNT];
-    u32 points{0}, hp{3};
+    u32 points{0}, hp{3}, money{0};
     bool damaged{false};
 
-    Player();
+    Player(bool show = true);
     ~Player();
 
     void update();

@@ -2,10 +2,11 @@
 #define __GLOBAL_HPP__
 
 #include <tonc.h>
+#include <maxmod.h>
 #include "engine/gba.h"
 #include "scener.hpp"
 
-// SLOW!! GRIT_CPY is bestter
+// tonccpy is SLOW!! GRIT_CPY(memcpy16/32) is better
 #define TONC_CPY(dst, src) tonccpy(dst, src, src##Len)
 
 namespace Global {
@@ -20,8 +21,19 @@ namespace Global {
 
   extern Scener::Scene s_menu;
   extern Scener::Scene s_game;
+  extern Scener::Scene s_options;
+
   extern u32 seed_rand, record_point;
   extern int times[5];
+  extern u32 money;
+
+  // Audio
+  extern bool sound;
+  extern mm_sound_effect snd_select;
+  extern mm_sound_effect snd_select2;
+  extern mm_sound_effect snd_hand_smash;
+  extern mm_sound_effect snd_jump;
+  extern mm_sound_effect snd_hit;
 
   extern TSprite *hp_spr[3];
 
