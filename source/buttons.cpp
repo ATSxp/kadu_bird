@@ -5,11 +5,8 @@
 #include <maxmod.h>
 #include "soundbank.h"
 
-#include "gfx_glass.h"
-
 Button::Button(u16 tid, u16 pb) {
-  TONC_CPY(pal_obj_bank[pb], gfx_glassPal);
-  TONC_CPY(&tile_mem[4][tid], gfx_glassTiles);
+  cpyCursorToVram(tid, pb);
 
   glass_spr = T_addObj(
       txt_pos.x, txt_pos.y,

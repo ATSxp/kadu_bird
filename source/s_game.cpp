@@ -17,7 +17,6 @@
 #include "map_bg1.h"
 #include "map_bg2.h"
 #include "map_bg3.h"
-#include "map_transition.h"
 
 #include "../include/verdana11.h"
 

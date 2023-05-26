@@ -2,4 +2,4 @@
 # Map Menu bg1:
 # SBB-layout 32x32 | 8bpp Tiles
 #
--gt -gB8 -pn32 -aw 240 -h 160 -m -mLs -mRft -Zl
+-gt -gB8 -pn32 -aw 240 -h 160 -m -mLs -mRft -gzl -mzl

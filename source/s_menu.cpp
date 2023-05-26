@@ -144,11 +144,11 @@ namespace Menu {
     memset16(&se_mem[bg[0]->sbb][bg[0]->cbb], 0x00, 202);
     memset16(&se_mem[bg[0]->sbb][bg[0]->cbb + 210], 0x00, 2);
 
-    LZ77UnCompVram(map_menu1Pal, pal_bg_mem);
-
     T_disableBg(1); // Hide BG 1 for intro
 
     GRIT_CPY(tile_mem[4], gfx_menu_textTiles);
+
+    GRIT_CPY(pal_bg_mem, map_menu1Pal);
     GRIT_CPY(pal_obj_mem, gfx_menu_textPal);
 
     for (ii = 0; ii < 3; ii++) {
@@ -272,7 +272,7 @@ namespace Menu {
 
     btns->space = 15;
 
-    LZ77UnCompVram(map_select1Pal, pal_bg_mem);
+    GRIT_CPY(pal_bg_bank[0], map_select1Pal);
     GRIT_CPY(pal_bg_bank[1], map_bg_picPal);
     GRIT_CPY(pal_bg_bank[2], gfx_ballon1Pal);
 

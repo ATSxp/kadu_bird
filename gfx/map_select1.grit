@@ -2,5 +2,5 @@
 # Map Menu Select bg1:
 # SBB-layout 32x32 | 4bpp Tiles
 #
--gt -gB4 -pn 16 -aw 240 -ah 161 -m -mLs -mRftp -Zl
+-gt -gB4 -pn 16 -aw 240 -ah 161 -m -mLs -mRftp -gzl -mzl
 

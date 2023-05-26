@@ -5,6 +5,8 @@
 #include <tonc.h>
 #include "engine/gba.h"
 
+#include "gfx_glass.h"
+
 typedef struct {
   CSTR name;
   fnptr callback;
@@ -48,6 +50,11 @@ class Button {
 
     inline void setButtonStatus(u8 id, bool on) 
     { btns[id].on = on; }
+
+    inline void cpyCursorToVram(u16 tid = 0, u16 pb = 0) {
+      GRIT_CPY(pal_obj_bank[pb], gfx_glassPal);
+      GRIT_CPY(&tile_mem[4][tid], gfx_glassTiles);
+    }
 };
 
 #endif // !__BUTTONS_HPP__
