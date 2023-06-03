@@ -9,6 +9,8 @@
 // tonccpy is SLOW!! GRIT_CPY(memcpy16/32) is better
 #define TONC_CPY(dst, src) tonccpy(dst, src, src##Len)
 
+#define MY_HOLY_DAY 14
+
 namespace Global {
   typedef struct {
     int offsetx, offsety;
@@ -22,6 +24,7 @@ namespace Global {
   extern Scener::Scene s_menu;
   extern Scener::Scene s_game;
   extern Scener::Scene s_options;
+  extern Scener::Scene s_egg;
 
   extern u32 seed_rand, record_point;
   extern int times[5];

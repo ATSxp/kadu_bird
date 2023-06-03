@@ -139,7 +139,9 @@ clean:
 
 run:
 	@echo running...
-	@mgba -2 $(TARGET).elf
+	@mgba-qt $(TARGET).elf
+
+# @mgba -2 $(TARGET).elf
 
 
 #---------------------------------------------------------------------------------

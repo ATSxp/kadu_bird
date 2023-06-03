@@ -1,25 +1,19 @@
-#include <string.h>
 #include "../include/buttons.hpp"
 #include "../include/global.hpp"
+#include <string.h>
 
-#include <maxmod.h>
 #include "soundbank.h"
+#include <maxmod.h>
 
-Button::Button(u16 tid, u16 pb) {
-  cpyCursorToVram(tid, pb);
+Button::Button(u16 tid, u16 pb) : pb(pb) {
+  GRIT_CPY(&tile_mem[4][tid], gfx_glassTiles);
 
-  glass_spr = T_addObj(
-      txt_pos.x, txt_pos.y,
-      OBJ_16X8,
-      tid, pb, 0, NULL
-    );
+  glass_spr = T_addObj(txt_pos.x, txt_pos.y, OBJ_16X8, tid, pb, 0, NULL);
 
   T_hideObj(glass_spr);
 }
 
-Button::~Button() {
-  REM_SPR(glass_spr);
-}
+Button::~Button() { REM_SPR(glass_spr); }
 
 void Button::update() {
   show();
@@ -29,7 +23,8 @@ void Button::update() {
 
   event = false;
 
-  if (!on) return;
+  if (!on)
+    return;
 
   old_cursor = cursor;
   cursor += bit_tribool(key_hit(-1), KI_DOWN, KI_UP);

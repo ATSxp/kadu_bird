@@ -1,0 +1,4 @@
+#
+# Text "Move" with icon for Easter Egg screen
+#
+-gt -gB4 -Mw 2 -Mh 2 -pn 16

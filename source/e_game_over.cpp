@@ -39,6 +39,7 @@ GameOver::GameOver() {
 
   GRIT_CPY(pal_obj_bank[4], gfx_handsPal);
   GRIT_CPY(pal_bg_bank[1], gfx_ballon2Pal);
+  btn->loadPal();
 }
 
 GameOver::~GameOver() {
