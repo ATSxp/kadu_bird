@@ -27,6 +27,7 @@ public:
   int space{8};
   std::vector<ButtonTemplate> btns;
   u16 tid, pb;
+  bool lock_cursor{false};
 
   Button(u16 tid = 0, u16 pb = 0);
   ~Button();

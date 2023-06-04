@@ -7,9 +7,7 @@
 
 Button::Button(u16 tid, u16 pb) : pb(pb) {
   GRIT_CPY(&tile_mem[4][tid], gfx_glassTiles);
-
   glass_spr = T_addObj(txt_pos.x, txt_pos.y, OBJ_16X8, tid, pb, 0, NULL);
-
   T_hideObj(glass_spr);
 }
 
@@ -28,7 +26,15 @@ void Button::update() {
 
   old_cursor = cursor;
   cursor += bit_tribool(key_hit(-1), KI_DOWN, KI_UP);
-  cursor = clamp(cursor, 0, btns.size());
+
+  if (lock_cursor) {
+    cursor = clamp(cursor, 0, btns.size());
+  } else {
+    if (cursor < 0)
+      cursor = static_cast<int>(btns.size()) - 1;
+    else if (cursor >= static_cast<int>(btns.size()))
+      cursor = 0;
+  }
 
   if (key_hit(KEY_UP | KEY_DOWN) && cursor != old_cursor) {
     mmEffectEx(&Global::snd_select2);

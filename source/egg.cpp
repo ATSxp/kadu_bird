@@ -75,17 +75,17 @@ void init() {
   pos.x = (16 << 8) >> 1; // Map width - Screen width / 2
   pos.y = (96 << 8) >> 1; // Map heigth - Screen heigth / 2
 
-  for (ii = 0; ii < 3; ii++)
-    txt_move[ii] =
-        T_addObj((ii << 4) + 1, 160 - 17, OBJ_16X16, ii << 2, 0, 0, NULL);
-
-  for (ii = 0; ii < 4; ii++)
+  for (ii = 0; ii < 4; ii++) {
     txt_next[ii] = T_addObj((ii << 4) + (240 - (16 << 2)) + 12, 0, OBJ_16X16,
                             (ii << 2) + 13, 1, 0, NULL);
-
-  for (ii = 0; ii < 4; ii++)
     txt_prev[ii] =
         T_addObj((ii << 4) + 1, 0, OBJ_16X16, (ii << 2) + 29, 2, 0, NULL);
+
+    if (ii > 2)
+      break;
+    txt_move[ii] =
+        T_addObj((ii << 4) + 1, 160 - 17, OBJ_16X16, ii << 2, 0, 0, NULL);
+  }
 
   reloadSlide();
 
@@ -95,13 +95,17 @@ void init() {
 }
 
 void update() {
-  if (evy < 0x040) {
-    if (key_hit(KEY_L) && count > 0)
+  if (evy < 0x040 && count == old_count) {
+    if (key_hit(KEY_L) && count > 0) {
       count--;
-    else if (key_hit(KEY_R) && count < eggs.size() - 1)
+      mmEffectEx(&Global::snd_select);
+    } else if (key_hit(KEY_R) && count < eggs.size() - 1) {
       count++;
+      mmEffectEx(&Global::snd_select);
+    }
 
     if (key_hit(KEY_B)) {
+      mmEffectEx(&Global::snd_select2);
       REG_BLDCNT |= BLD_OBJ;
       evdy = FADE_SPEED;
       go = true;
@@ -137,7 +141,7 @@ void end() {
     REM_SPR(txt_next[ii]);
     REM_SPR(txt_prev[ii]);
 
-    if (ii > 3)
+    if (ii > 2)
       break;
     REM_SPR(txt_move[ii]);
   }

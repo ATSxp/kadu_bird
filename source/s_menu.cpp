@@ -182,7 +182,7 @@ void updateIntro() {
   }
 
   // Secrets hehe
-  if (key_hit(KEY_B))
+  if (key_hit(KEY_A))
     egg_count++;
   else if (egg_count >= MY_HOLY_DAY && !egg_on) {
     egg_on = true;
