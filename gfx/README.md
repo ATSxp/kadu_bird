@@ -19,9 +19,11 @@ following, create a folder (inside this one) and put all the desired images in i
 that, inside the folder, write your `grit`  file with the same name as the current folder. 
 And don't forget to add it to the `Makefile` .
 ```makefile
+# Makefile
+
 # etc...
 GRAPHICS	:= gfx \
-                # some folder... \
-                <your_folder>
+            # some folder... \
+            <your_folder>
 # etc...
 ```

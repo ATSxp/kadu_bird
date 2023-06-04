@@ -88,13 +88,14 @@ void init() {
         T_addObj((ii << 4) + 1, 0, OBJ_16X16, (ii << 2) + 29, 2, 0, NULL);
 
   reloadSlide();
+
   TONC_CPY(pal_obj_mem, gfx_egg_text01Pal);
   TONC_CPY(pal_obj_bank[1], gfx_egg_text02Pal);
   TONC_CPY(pal_obj_bank[2], gfx_egg_text02Pal);
 }
 
 void update() {
-  if (evy < 0x020) {
+  if (evy < 0x040) {
     if (key_hit(KEY_L) && count > 0)
       count--;
     else if (key_hit(KEY_R) && count < eggs.size() - 1)
@@ -113,9 +114,7 @@ void update() {
   if (count != old_count) {
     evdy = FADE_SPEED;
     reloadSlide();
-  }
-
-  if (evy >= 0x080 && go)
+  } else if (evy >= 0x080 && go)
     Scener::set(Global::s_menu);
 
   evy = clamp(evy += evdy, 0x00, 0x081);
@@ -150,6 +149,7 @@ void reloadSlide() {
     LZ77UnCompVram(eggs[count].tile, tile_mem);
     LZ77UnCompVram(eggs[count].map, &se_mem[SBB][CBB]);
     LZ77UnCompVram(eggs[count].pal, pal_bg_mem);
+
     evdy = -FADE_SPEED;
     pos.x = (16 << 8) >> 1; // Map width - Screen width / 2
     pos.y = (96 << 8) >> 1; // Map heigth - Screen heigth / 2

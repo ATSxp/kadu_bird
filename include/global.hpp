@@ -37,6 +37,7 @@ namespace Global {
   extern mm_sound_effect snd_hand_smash;
   extern mm_sound_effect snd_jump;
   extern mm_sound_effect snd_hit;
+  extern mm_sound_effect snd_burenyu;
 
   extern TSprite *hp_spr[3];
 

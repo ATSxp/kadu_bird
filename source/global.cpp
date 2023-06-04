@@ -51,6 +51,14 @@ namespace Global {
     128
   };
 
+  mm_sound_effect snd_burenyu{
+    SFX_BURENYU,
+    0x0400,
+    0,
+    255,
+    128
+  };
+
   RECT se_ballon(SCR_ENTRY *sbb, int x, int y, int w, int h, SCR_ENTRY se) {
     u16 id = BFN_GET(se, SE_ID);
     u16 pb = SE_PALBANK(BFN_GET(se, SE_PALBANK));

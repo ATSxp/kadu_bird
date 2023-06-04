@@ -25,7 +25,7 @@ int ii;
 int jumps{2};
 bool started{false}, in_scene{true}, in_menu;
 FIXED t, bg_dy, kadu_dy, evy;
-bool go_to_scene;
+bool go_to_scene, egg_on{false};
 u32 next_scene{0};
 u8 egg_count;
 
@@ -184,6 +184,11 @@ void updateIntro() {
   // Secrets hehe
   if (key_hit(KEY_B))
     egg_count++;
+  else if (egg_count >= MY_HOLY_DAY && !egg_on) {
+    egg_on = true;
+    mmEffectEx(&Global::snd_burenyu);
+  }
+
   egg_count = clamp(egg_count, 0, MY_HOLY_DAY + 1);
 
   if (!in_scene) {
