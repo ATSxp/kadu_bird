@@ -1,7 +1,5 @@
-#include <maxmod.h>
 #include "../include/e_pipe.hpp"
-
-#include "gfx_pipe.h"
+#include <maxmod.h>
 
 Pipe::Pipe(int x, int y, FIXED speed) : dx(speed) {
   GRIT_CPY(&tile_mem[4][tid], gfx_pipeTiles);
@@ -12,22 +10,19 @@ Pipe::Pipe(int x, int y, FIXED speed) : dx(speed) {
   pos.y = y << 8;
 
   for (ii = 0; ii < PIPE_SPR_COUNT; ii++) {
-    spr[ii] = T_addObj(
-        x + pipe_base[ii].offsetx, y + pipe_base[ii].offsety,
-        pipe_base[ii].size, tid + pipe_base[ii].offset_tid, 1, 2, NULL
-      );
+    spr[ii] = T_addObj(x + pipe_base[ii].offsetx, y + pipe_base[ii].offsety,
+                       pipe_base[ii].size, tid + pipe_base[ii].offset_tid, 1, 2,
+                       NULL);
   }
 
-  GRIT_CPY(pal_obj_bank[1], gfx_pipePal);
   mgba_printf(MGBA_LOG_DEBUG, "Pipe created");
 }
 
-Pipe::~Pipe() {
-  mgba_printf(MGBA_LOG_DEBUG, "Pipe deleted");
-}
+Pipe::~Pipe() { mgba_printf(MGBA_LOG_DEBUG, "Pipe deleted"); }
 
 void Pipe::update() {
-  if ((pos.x >> 8) + w <= 0) die();
+  if ((pos.x >> 8) + w <= 0)
+    die();
 
   pos.x += dx;
   updateSprs();
@@ -38,7 +33,7 @@ void Pipe::updateSprs() {
   POINT32 pt = {pos.x >> 8, pos.y >> 8};
 
   for (ii = 0; ii < PIPE_SPR_COUNT; ii++) {
-    add = ii > (PIPE_SPR_COUNT >> 1) - 1 ? space_btw: 0;
+    add = ii > (PIPE_SPR_COUNT >> 1) - 1 ? space_btw : 0;
 
     spr[ii]->x = pt.x + pipe_base[ii].offsetx;
     spr[ii]->y = (pt.y + add) + pipe_base[ii].offsety;
@@ -53,16 +48,12 @@ void Pipe::PipeVsPlayer(Player &p) {
   POINT32 pt2 = {(p.pos.x >> 8) + 16, (p.pos.y >> 8) + 8};
   u32 pw = p.w - 16, ph = p.h - 16;
 
-  bool up_pipe = Global::AABB(
-      pt1, w, h,
-      pt2, pw, ph
-    ), 
-      down_pipe = Global::AABB(
-      (POINT32){pt1.x, pt1.y + space_btw}, w, h,
-      pt2, pw, ph
-    );
+  bool up_pipe = Global::AABB(pt1, w, h, pt2, pw, ph),
+       down_pipe =
+           Global::AABB((POINT32){pt1.x, pt1.y + space_btw}, w, h, pt2, pw, ph);
 
-  if (p.dead) return;
+  if (p.dead)
+    return;
 
   if ((up_pipe || down_pipe) && !p.damaged) {
     mmEffectEx(&Global::snd_hit);

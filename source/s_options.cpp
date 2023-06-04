@@ -14,7 +14,7 @@ std::shared_ptr<Button> btns{nullptr};
 
 int bw{18}, bh;
 POINT32 board_pos{(SCREEN_WIDTH_T - bw) >> 1, 0};
-u8 evy;
+FIXED evy;
 
 void init() {
   T_setMode(0);
@@ -66,10 +66,9 @@ void init() {
 void update() {
   tte_erase_screen();
 
-  // TODO: Fazer sabagaça funcionar!!!
-  // if (evy > 0x00) evy -= 0x03;
-  // evy = clamp(evy -= 0x03, 0, 0x081);
-  // REG_BLDY = BLDY_BUILD(evy >> 3);
+  if (evy > 0x00) evy -= 0x03;
+  evy = clamp(evy, 0, 0x081);
+  REG_BLDY = BLDY_BUILD(evy >> 3);
 
   btns->setButtonStatus(0, Global::sound);
 

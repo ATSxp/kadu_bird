@@ -29,11 +29,30 @@ bool go_to_scene, egg_on{false};
 u32 next_scene{0};
 u8 egg_count;
 
-std::shared_ptr<Map> bg[3]{nullptr};
-std::shared_ptr<Button> btns{nullptr};
-TSprite *start_spr[3]{nullptr};
+std::shared_ptr<Map> bg[3];
+std::shared_ptr<Button> btns;
+TSprite *start_spr[3];
 
 Scener::Scene scenes[3]{Global::s_game, Global::s_options, NULL};
+
+const SCR_ENTRY *maps[3]{
+    (SCR_ENTRY *)map_menu1Map,
+    (SCR_ENTRY *)map_menu2Map,
+    (SCR_ENTRY *)map_menu3Map,
+};
+
+const TILE *tiles[3]{
+    (TILE *)map_menu1Tiles,
+    (TILE *)map_menu2Tiles,
+    (TILE *)map_menu3Tiles,
+};
+
+const u16 tile_ids[3]{0, 202, 469};
+const POINT32 bg_init_pos[3]{
+    {0x00, -(150 << 8)},
+    {0x00, -(95 << 8)},
+    {0x00, -(48 << 8)},
+};
 
 void initIntro();
 void updateIntro();
@@ -102,27 +121,10 @@ void end() {
 }
 
 void initIntro() {
-  const SCR_ENTRY *maps[3]{
-      (SCR_ENTRY *)map_menu1Map,
-      (SCR_ENTRY *)map_menu2Map,
-      (SCR_ENTRY *)map_menu3Map,
-  };
-
-  const TILE *tiles[3]{
-      (TILE *)map_menu1Tiles,
-      (TILE *)map_menu2Tiles,
-      (TILE *)map_menu3Tiles,
-  };
-
-  const u16 tile_ids[3]{0, 202, 469};
-  const POINT32 bg_init_pos[3]{
-      {0x00, -(150 << 8)},
-      {0x00, -(95 << 8)},
-      {0x00, -(48 << 8)},
-  };
-
   if (!started)
     REG_BLDCNT = BLD_ALL | BLD_WHITE;
+
+  GRIT_CPY(tile_mem[4], gfx_menu_textTiles);
 
   for (ii = 0; ii < 3; ii++) {
     bg[ii] = std::make_shared<Map>(ii + 1, maps[ii], 32, 32, 0, 31 - (ii << 1),
@@ -138,6 +140,8 @@ void initIntro() {
       REG_BGCNT[ii] &= ~BG_REG_32x32;
       REG_BGCNT[ii] |= BG_REG_32x64;
     }
+
+    start_spr[ii] = T_addObj((ii << 4) << 1, 0, OBJ_32X16, ii << 3, 0, 0, NULL);
   }
 
   // Clear part of Map from BG 1
@@ -146,14 +150,8 @@ void initIntro() {
 
   T_disableBg(1); // Hide BG 1 for intro
 
-  GRIT_CPY(tile_mem[4], gfx_menu_textTiles);
-
   GRIT_CPY(pal_bg_mem, map_menu1Pal);
   GRIT_CPY(pal_obj_mem, gfx_menu_textPal);
-
-  for (ii = 0; ii < 3; ii++) {
-    start_spr[ii] = T_addObj((ii << 4) << 1, 0, OBJ_32X16, ii << 3, 0, 0, NULL);
-  }
 }
 
 void updateIntro() {
@@ -175,8 +173,9 @@ void updateIntro() {
       }
     }
 
-    for (ii = 0; ii < 3; ii++)
+    for (ii = 0; ii < 3; ii++) {
       bg[ii]->pos.y = 0x0100; // Initial position
+    }
 
     return;
   }
@@ -273,7 +272,9 @@ void initMenu() {
 
   btns->add("Play", [](void) { next_scene = 0; });
   btns->add("Options", [](void) { next_scene = 1; });
-  btns->add("Extras", NULL);
+
+  // TODO: Adicionar isso após fazer os extras
+  // btns->add("Extras", NULL);
 
   btns->space = 15;
 
@@ -282,16 +283,19 @@ void initMenu() {
   GRIT_CPY(pal_bg_bank[2], gfx_ballon1Pal);
   btns->loadPal();
 
-  Global::se_ballon(&se_mem[bg[0]->sbb][0], 0, 0, 10, 4,
-                    SE_ID(403) | SE_PALBANK(2));
+  // TODO: Adicionar isso após fazer os extras
+  // Global::se_ballon(&se_mem[bg[0]->sbb][0], 0, 0, 10, 4,
+  // SE_ID(403) | SE_PALBANK(2));
 }
 
 void updateMenu() {
+  // TODO: Adicionar isso após fazer os extras
+  // char d[10];
+
   if (!in_menu)
     return;
-  char d[10];
 
-  if (evy > 0x040)
+  if (evy > 0x060)
     btns->onInput(false);
   else
     btns->onInput(true);
@@ -311,10 +315,11 @@ void updateMenu() {
     Scener::set(scenes[next_scene]);
   }
 
-  tte_set_ink(15);
-  tte_set_font(&verdana11Font);
-  posprintf(d, "#{P:5,4}$ %05d", Global::money);
-  tte_write(d);
+  // TODO: Adicionar isso após fazer os extras
+  // tte_set_ink(15);
+  // tte_set_font(&verdana11Font);
+  // posprintf(d, "#{P:5,4}$ %05d", Global::money);
+  // tte_write(d);
 
   tte_set_ink(14);
   tte_set_font(&verdana10Font);

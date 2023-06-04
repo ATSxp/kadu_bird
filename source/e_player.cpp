@@ -1,7 +1,5 @@
-#include <maxmod.h>
 #include "../include/e_player.hpp"
-
-#include "gfx_kadu.h"
+#include <maxmod.h>
 
 #define PLAYER_SPRS 2
 #define PLAYER_SPR_TILES 9
@@ -9,7 +7,8 @@
 #define PLAYER_JUMP 0x0300
 
 Player::Player(bool show) {
-  if (!show) return;
+  if (!show)
+    return;
 
   Global::SprBase *b = p_base_spr;
 
@@ -19,20 +18,13 @@ Player::Player(bool show) {
   GRIT_CPY(tile_mem[4], gfx_kaduTiles);
 
   for (ii = 0; ii < PLAYER_SPR_COUNT; ii++) {
-    spr[ii] = T_addObj(
-        (pos.x >> 8) + b->offsetx, 
-        (pos.y >> 8) + b->offsety,
-        b->size,
-        tid + b->offset_tid,
-        0, 2, NULL
-      );
+    spr[ii] = T_addObj((pos.x >> 8) + b->offsetx, (pos.y >> 8) + b->offsety,
+                       b->size, tid + b->offset_tid, 0, 2, NULL);
 
     b++;
   }
-  
-  damage_t = PLAYER_DAMAGE_MAX_T;
 
-  GRIT_CPY(pal_obj_mem, gfx_kaduPal);
+  damage_t = PLAYER_DAMAGE_MAX_T;
   mgba_printf(MGBA_LOG_DEBUG, "Player created");
 }
 
@@ -48,7 +40,7 @@ void Player::update() {
   POINT32 pt = {pos.x >> 8, pos.y >> 8};
   // dx = (key_tri_horz() << 8) << 1;
   hp = clamp(hp, 0, 4);
-  
+
   if (!dead) {
     if (damaged)
       damage_t -= 0x030;
@@ -70,9 +62,12 @@ void Player::update() {
     dy = -PLAYER_JUMP;
   }
 
-  if (dy < 0x00 && !damaged) setTile(PLAYER_SPR_TILES);
-  else if (damaged) setTile(PLAYER_SPR_TILES << 1);
-  else           setTile(0);
+  if (dy < 0x00 && !damaged)
+    setTile(PLAYER_SPR_TILES);
+  else if (damaged)
+    setTile(PLAYER_SPR_TILES << 1);
+  else
+    setTile(0);
 
   if (pt.y <= 0)
     pos.y = 0x00;

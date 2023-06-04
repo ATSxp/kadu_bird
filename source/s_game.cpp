@@ -20,21 +20,20 @@
 
 #include "../include/verdana11.h"
 
+namespace Game {
 #define BOARD_TID 59
 #define HP_TID 67
 
-namespace Game {
 int ii;
 size_t kk;
 
-std::shared_ptr<Player> p{nullptr};
-std::array<std::shared_ptr<Map>, 3> bg{nullptr, nullptr, nullptr};
-std::shared_ptr<GameOver> gmovr{nullptr};
-TSprite *board_spr[2]{nullptr, nullptr};
+std::shared_ptr<Player> p;
+std::array<std::shared_ptr<Map>, 3> bg;
+std::shared_ptr<GameOver> gmovr;
+TSprite *board_spr[2];
 std::vector<Pipe> pipe_l;
-FIXED pipe_t;
-u8 evy;
-bool paused, game_over;
+FIXED pipe_t, evy;
+bool paused, game_over, ready;
 int bg_size = static_cast<int>(bg.size());
 
 void spawnPipes();
@@ -64,8 +63,8 @@ void init(void) {
 
   T_setMode(0);
   T_enableBg(0);
-
   T_enableObjs();
+
   T_initObjs();
 
   REG_BLDCNT = (BLD_ALL & ~BLD_BG0) | BLD_BLACK;
@@ -97,15 +96,16 @@ void init(void) {
   }
 
   LZ77UnCompVram(map_bg1Pal, pal_bg_mem);
+  GRIT_CPY(pal_obj_bank[1], gfx_pipePal);
   GRIT_CPY(pal_obj_bank[2], gfx_boardPal);
   GRIT_CPY(pal_obj_bank[3], gfx_hpPal);
+  p->loadPal();
   pal_bg_bank[15][3] = CLR_WHITE;
   pal_bg_bank[15][4] = CLR_RED;
 
-  paused = false;
-  game_over = false;
+  paused = game_over = ready = false;
   pipe_t = 0x00;
-  evy = 0x00;
+  evy = 0x080;
 }
 
 void update(void) {
@@ -121,16 +121,12 @@ void update(void) {
   if (p->hp < 3)
     T_setTileObj(Global::hp_spr[p->hp], HP_TID + 4);
 
-  // Fade background and pipes
-  evy = clamp(evy, 0x00, 0x081);
-  REG_BLDY = BLDY_BUILD(evy >> 3);
-
   if (!paused)
     clr_fade(gfx_pipePal, CLR_BLACK, pal_obj_bank[1], 16, evy >> 2);
 
   if (p->dead) {
     REG_BLDCNT &= ~BLD_OBJ;
-    evy += 4;
+    evy += 0x06;
 
     if (evy >= 0x080) {
       bg[0]->move(0x00, 0x00);
@@ -155,13 +151,22 @@ void update(void) {
 
     hideHud();
   } else {
-    if (!p->dead) {
+    p->update();
+    spawnPipes();
+
+    if (!ready && evy > 0x00) {
+      evy -= 0x04;
+      p->dy = 0x00;
+
+      if (evy <= 0x00)
+        ready = true;
+
+      tte_erase_line();
+      hideHud();
+    } else if (!p->dead) {
       evy = 0x00;
       showHud();
     }
-
-    p->update();
-    spawnPipes();
 
     for (ii = 0; ii < bg_size; ii++)
       bg[ii]->update();
@@ -177,6 +182,10 @@ void update(void) {
       }
     }
   }
+
+  // Fade background and pipes
+  evy = clamp(evy, 0x00, 0x081);
+  REG_BLDY = BLDY_BUILD(evy >> 3);
 
   T_updateObjs(FALSE);
 }

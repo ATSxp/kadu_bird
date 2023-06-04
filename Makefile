@@ -37,7 +37,7 @@ INCLUDES	:= include include/engine
 DATA			:=
 MUSIC			:= audio
 GRAPHICS	:= gfx gfx/eggs gfx/ballons \
-						 gfx/egg_texts
+						 gfx/egg_texts gfx/intro
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -89,7 +89,6 @@ CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 PNGFILES	:=	$(foreach dir,$(GRAPHICS),$(notdir $(wildcard $(dir)/*.png)))
-JPGFILES	:=	$(foreach dir,$(GRAPHICS),$(notdir $(wildcard $(dir)/*.jpg)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 
 ifneq ($(strip $(MUSIC)),)

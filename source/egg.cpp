@@ -61,9 +61,9 @@ void init() {
 
   T_initObjs();
 
-  TONC_CPY(tile_mem[4], gfx_egg_text01Tiles);
-  TONC_CPY(&tile_mem[4][13], gfx_egg_text02Tiles);
-  TONC_CPY(&tile_mem[4][29], gfx_egg_text03Tiles);
+  GRIT_CPY(tile_mem[4], gfx_egg_text01Tiles);
+  GRIT_CPY(&tile_mem[4][13], gfx_egg_text02Tiles);
+  GRIT_CPY(&tile_mem[4][29], gfx_egg_text03Tiles);
 
   REG_BG0CNT = BG_CBB(CBB) | BG_SBB(SBB) | BG_8BPP | BG_REG_32x32;
   REG_BLDCNT = (BLD_ALL & ~BLD_OBJ) | BLD_BLACK;
@@ -89,9 +89,9 @@ void init() {
 
   reloadSlide();
 
-  TONC_CPY(pal_obj_mem, gfx_egg_text01Pal);
-  TONC_CPY(pal_obj_bank[1], gfx_egg_text02Pal);
-  TONC_CPY(pal_obj_bank[2], gfx_egg_text02Pal);
+  GRIT_CPY(pal_obj_mem, gfx_egg_text01Pal);
+  GRIT_CPY(pal_obj_bank[1], gfx_egg_text02Pal);
+  GRIT_CPY(pal_obj_bank[2], gfx_egg_text02Pal);
 }
 
 void update() {

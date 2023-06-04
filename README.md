@@ -19,11 +19,16 @@ your choice.
 To compile the ROM is quite simple.
 Prerequisites:
 
-- DevKitARM - To generate the ROM
-- [Grit](https://www.coranac.com/man/grit/html/grit.htm)  - To convert the graphics
-- [Maxmod](https://maxmod.devkitpro.org/) - To convert the audio files
+- DevKitARM - generate the ROM
+- [Grit](https://www.coranac.com/man/grit/html/grit.htm)  - convert the graphics
+- [Maxmod](https://maxmod.devkitpro.org/) - convert the audio files
 
 Luckily, [Devkitpro](https://devkitpro.org/wiki/Getting_Started) provides an 
 environment with the programs required above, complete for the development of 
 several consoles, including the GBA, just go to their website and follow the 
 installation instructions.
+
+After installing the requirements, go to the folder where the *Kadu Bird* files 
+are located and run `make` on the command line.
+
+Compiled ROM, ready to play =)

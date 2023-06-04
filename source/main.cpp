@@ -8,7 +8,7 @@ int main () {
   T_init(mmVBlank);
   mmInitDefault((mm_addr)soundbank_bin, 8);
 
-  Scener::set(Global::s_menu);
+  Scener::set(Global::s_intro);
 
   while(true) {
     if (Global::sound)
