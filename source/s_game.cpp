@@ -27,14 +27,15 @@ namespace Game {
 int ii;
 size_t kk;
 
-std::shared_ptr<Player> p;
-std::array<std::shared_ptr<Map>, 3> bg;
-std::shared_ptr<GameOver> gmovr;
-TSprite *board_spr[2];
-std::vector<Pipe> pipe_l;
-FIXED pipe_t, evy;
-bool paused, game_over, ready;
-int bg_size = static_cast<int>(bg.size());
+static std::shared_ptr<Player> p;
+static std::array<std::shared_ptr<Map>, 3> bg;
+static std::shared_ptr<GameOver> gmovr;
+static TSprite *board_spr[2];
+static std::vector<Pipe> pipe_l;
+
+static FIXED pipe_t, evy;
+static bool paused, game_over, ready;
+static int bg_size = static_cast<int>(bg.size());
 
 void spawnPipes();
 void diePipes();

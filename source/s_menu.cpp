@@ -15,6 +15,7 @@
 
 #include "../include/verdana11.h"
 #include "gfx_ballon1.h"
+#include "gfx_menu_date.h"
 #include "gfx_menu_text.h"
 
 #define BG_SPEED 0x080
@@ -32,6 +33,7 @@ u8 egg_count;
 std::shared_ptr<Map> bg[3];
 std::shared_ptr<Button> btns;
 TSprite *start_spr[3];
+TSprite *date_spr[3];
 
 Scener::Scene scenes[3]{Global::s_game, Global::s_options, NULL};
 
@@ -53,6 +55,8 @@ const POINT32 bg_init_pos[3]{
     {0x00, -(95 << 8)},
     {0x00, -(48 << 8)},
 };
+
+const TFont *fonts[2] = {&verdana10Font, &verdana9Font};
 
 void initIntro();
 void updateIntro();
@@ -110,9 +114,10 @@ void end() {
   REG_BLDY = 0;
 
   for (ii = 0; ii < 3; ii++) {
-    if (start_spr[ii]) {
-      REM_SPR(start_spr[ii]);
-    }
+    // if (start_spr[ii]) {
+    REM_SPR(start_spr[ii]);
+    REM_SPR(date_spr[ii]);
+    // }
 
     bg[ii] = nullptr;
   }
@@ -125,6 +130,7 @@ void initIntro() {
     REG_BLDCNT = BLD_ALL | BLD_WHITE;
 
   GRIT_CPY(tile_mem[4], gfx_menu_textTiles);
+  GRIT_CPY(&tile_mem[4][24], gfx_menu_dateTiles);
 
   for (ii = 0; ii < 3; ii++) {
     bg[ii] = std::make_shared<Map>(ii + 1, maps[ii], 32, 32, 0, 31 - (ii << 1),
@@ -142,6 +148,8 @@ void initIntro() {
     }
 
     start_spr[ii] = T_addObj((ii << 4) << 1, 0, OBJ_32X16, ii << 3, 0, 0, NULL);
+    date_spr[ii] = T_addObj((ii << 4) << 1, 160 - 16, OBJ_32X16, 24 + (ii << 3),
+                            0, 0, NULL);
   }
 
   // Clear part of Map from BG 1
@@ -169,7 +177,7 @@ void updateIntro() {
 
         RegisterRamReset(RESET_PALETTE);
         RegisterRamReset(RESET_VRAM);
-        initMenu();
+        Scener::set(Global::s_menu);
       }
     }
 
@@ -243,8 +251,6 @@ void updateIntro() {
 }
 
 void initMenu() {
-  const TFont *fonts[2] = {&verdana10Font, &verdana9Font};
-
   for (ii = 0; ii < 3; ii++) {
     if (start_spr[ii]) {
       REM_SPR(start_spr[ii]);
@@ -252,6 +258,8 @@ void initMenu() {
 
     bg[ii] = nullptr;
   }
+
+  REG_BLDY = BLDY_BUILD(evy >> 3);
 
   bg[0] = std::make_shared<Map>(1, map_select1Map, 32, 32, 0, 29, true);
   bg[1] = std::make_shared<Map>(2, nullptr, 32, 32, 0, 27, false);

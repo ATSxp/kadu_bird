@@ -37,7 +37,8 @@ INCLUDES	:= include include/engine
 DATA			:=
 MUSIC			:= audio
 GRAPHICS	:= gfx gfx/eggs gfx/ballons \
-						 gfx/egg_texts gfx/intro
+						 gfx/egg_texts gfx/intro  \
+						 gfx/menu_texts
 
 #---------------------------------------------------------------------------------
 # options for code generation
