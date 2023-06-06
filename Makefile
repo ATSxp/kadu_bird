@@ -32,11 +32,11 @@ ROMNAME 	:= KADUBIRD
 MAKERCODE := 01
 VERSION 	:= 1.0
 BUILD			:= build
-SOURCES		:= source source/engine
-INCLUDES	:= include include/engine
+SOURCES		:= source source/engine source/eggs
+INCLUDES	:= include include/engine include/eggs
 DATA			:=
 MUSIC			:= audio
-GRAPHICS	:= gfx gfx/eggs gfx/ballons \
+GRAPHICS	:= gfx gfx/ballons \
 						 gfx/egg_texts gfx/intro  \
 						 gfx/menu_texts
 

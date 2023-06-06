@@ -107,6 +107,8 @@ void init(void) {
   paused = game_over = ready = false;
   pipe_t = 0x00;
   evy = 0x080;
+
+  mmStart(MOD_BANJO, MM_PLAY_LOOP);
 }
 
 void update(void) {
@@ -126,6 +128,8 @@ void update(void) {
     clr_fade(gfx_pipePal, CLR_BLACK, pal_obj_bank[1], 16, evy >> 2);
 
   if (p->dead) {
+    mmSetModuleVolume(500);
+
     REG_BLDCNT &= ~BLD_OBJ;
     evy += 0x06;
 
@@ -149,9 +153,13 @@ void update(void) {
   if (paused && !p->dead) {
     evy = 0x040;
     tte_write("#{el;P:96,72;ci:3}Paused");
+    mmPause();
 
     hideHud();
   } else {
+    mmSetModuleVolume(300);
+    mmResume();
+
     p->update();
     spawnPipes();
 

@@ -24,7 +24,7 @@ void init() {
   T_setMode(3);
   T_enableBg(2);
 
-  REG_BLDCNT = BLD_BG2 | BLD_WHITE;
+  REG_BLDCNT = BLD_ALL | BLD_WHITE;
   REG_BLDY = BLDY_BUILD(evy >> 3);
 
   reloadSlide();
@@ -40,6 +40,14 @@ void update() {
   if (old_count != count) {
     evdy = 0x03;
     reloadSlide();
+  }
+
+  if (count == 2) {
+    REG_BLDCNT &= ~BLD_WHITE;
+    REG_BLDCNT |= BLD_BLACK;
+  } else if (count == 3) {
+    REG_BLDCNT &= ~BLD_BLACK;
+    REG_BLDCNT |= BLD_WHITE;
   }
 
   if ((count >= (int)intro.size() && evy >= 0x080) || key_hit(KEY_START))

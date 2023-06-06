@@ -86,6 +86,8 @@ void init() {
 }
 
 void update() {
+  mmSetModuleVolume(500);
+
   t += 0x0400;
 
   if (in_scene)
@@ -126,9 +128,6 @@ void end() {
 }
 
 void initIntro() {
-  if (!started)
-    REG_BLDCNT = BLD_ALL | BLD_WHITE;
-
   GRIT_CPY(tile_mem[4], gfx_menu_textTiles);
   GRIT_CPY(&tile_mem[4][24], gfx_menu_dateTiles);
 
@@ -160,6 +159,9 @@ void initIntro() {
 
   GRIT_CPY(pal_bg_mem, map_menu1Pal);
   GRIT_CPY(pal_obj_mem, gfx_menu_textPal);
+  
+  mmStart(MOD_AFFAIR, MM_PLAY_LOOP);
+
 }
 
 void updateIntro() {
@@ -177,7 +179,7 @@ void updateIntro() {
 
         RegisterRamReset(RESET_PALETTE);
         RegisterRamReset(RESET_VRAM);
-        Scener::set(Global::s_menu);
+        initMenu();
       }
     }
 
@@ -294,6 +296,8 @@ void initMenu() {
   // TODO: Adicionar isso após fazer os extras
   // Global::se_ballon(&se_mem[bg[0]->sbb][0], 0, 0, 10, 4,
   // SE_ID(403) | SE_PALBANK(2));
+  
+  mmStart(MOD_SONGS_OF_A_DRAGON, MM_PLAY_LOOP);
 }
 
 void updateMenu() {

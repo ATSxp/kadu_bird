@@ -10,13 +10,13 @@
 #include <tonc.h>
 #include <vector>
 
-#include "map_egg01.h"
-#include "map_egg02.h"
-#include "map_egg03.h"
-#include "map_egg04.h"
-#include "map_egg05.h"
-#include "map_egg06.h"
-#include "map_egg07.h"
+#include "../include/eggs/map_egg01.h"
+#include "../include/eggs/map_egg02.h"
+#include "../include/eggs/map_egg03.h"
+#include "../include/eggs/map_egg04.h"
+#include "../include/eggs/map_egg05.h"
+#include "../include/eggs/map_egg06.h"
+#include "../include/eggs/map_egg07.h"
 
 #include "gfx_egg_text01.h"
 #include "gfx_egg_text02.h"
@@ -40,7 +40,7 @@ int ii;
 
 static u8 count, old_count;
 static FIXED evy, evdy;
-static bool go;
+static bool go, show_hud{true};
 static POINT32 pos;
 
 static TSprite *txt_move[3];
@@ -92,9 +92,13 @@ void init() {
   GRIT_CPY(pal_obj_mem, gfx_egg_text01Pal);
   GRIT_CPY(pal_obj_bank[1], gfx_egg_text02Pal);
   GRIT_CPY(pal_obj_bank[2], gfx_egg_text02Pal);
+
+  mmStart(MOD_DARKIE_RAREEXPORTS, MM_PLAY_LOOP);
 }
 
 void update() {
+  mmSetModuleVolume(300);
+
   if (evy < 0x040 && count == old_count) {
     if (key_hit(KEY_L) && count > 0) {
       count--;
@@ -111,9 +115,17 @@ void update() {
       go = true;
     }
 
+    if (key_hit(KEY_START))
+      show_hud = !show_hud;
+
     pos.x = clamp(pos.x += (key_tri_horz() << 8), 0, 16 << 8);
     pos.y = clamp(pos.y += (key_tri_vert() << 8), 0, 96 << 8);
   }
+
+  if (show_hud)
+    T_enableObjs();
+  else
+    T_disableObjs();
 
   if (count != old_count) {
     evdy = FADE_SPEED;

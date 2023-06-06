@@ -1,5 +1,4 @@
 #include "../include/global.hpp"
-#include "soundbank.h"
 
 namespace Global {
 TSprite *hp_spr[3];

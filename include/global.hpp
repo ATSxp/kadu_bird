@@ -5,6 +5,7 @@
 #include "scener.hpp"
 #include <maxmod.h>
 #include <tonc.h>
+#include "soundbank.h"
 
 // tonccpy is SLOW!! memcpy16/32 is better
 //#define TONC_CPY(dst, src) tonccpy(dst, src, src##Len)
