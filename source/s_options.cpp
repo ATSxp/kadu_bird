@@ -17,6 +17,8 @@ POINT32 board_pos{(SCREEN_WIDTH_T - bw) >> 1, 0};
 FIXED evy;
 
 void init() {
+  mmStop();
+
   T_setMode(0);
   T_enableBg(0);
 

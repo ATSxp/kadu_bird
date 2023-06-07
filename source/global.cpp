@@ -3,10 +3,12 @@
 namespace Global {
 TSprite *hp_spr[3];
 u32 seed_rand{0};
-u32 record_point{0};
+u32 record_point;
 u32 money{0};
 int df{D_MEDIUM};
 int times[5];
+
+u8 sram_buffer[SRAM_BUFFER_SIZE];
 
 // Audio
 bool sound{true};
@@ -41,5 +43,12 @@ RECT se_ballon(SCR_ENTRY *sbb, int x, int y, int w, int h, SCR_ENTRY se) {
   se_plot(sbb, x + (w - 2), y + (h - 2), id | pb | SE_HFLIP | SE_VFLIP);
 
   return (RECT){x, y, x + (w - 1), y + (h - 1)};
+}
+
+void loadSave() {
+  record_point = (u32)sram_buffer[SAVE_RECORD];
+  seed_rand = (u32)sram_buffer[SAVE_RSEED];
+
+  mgba_printf(MGBA_LOG_DEBUG, "SRAM Game Data Loaded");
 }
 } // namespace Global

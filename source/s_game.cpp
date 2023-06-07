@@ -37,30 +37,32 @@ static FIXED pipe_t, evy;
 static bool paused, game_over, ready;
 static int bg_size = static_cast<int>(bg.size());
 
+static const TFont *fonts[2]{&verdana9Font, &verdana9bFont};
+
+static constexpr SCR_ENTRY *maps[3] = {
+   (SCR_ENTRY *)map_bg1Map,
+   (SCR_ENTRY *)map_bg2Map,
+   (SCR_ENTRY *)map_bg3Map,
+};
+
+static const TILE4 *tiles[3] = {
+    (TILE4 *)map_bg1Tiles,
+    (TILE4 *)map_bg2Tiles,
+    (TILE4 *)map_bg3Tiles,
+};
+
+static constexpr u16 tids[3] = {0, 155, 208};
+static constexpr FIXED bg_speeds[3] = {0x090, 0x050, -0x020};
+
 void spawnPipes();
 void diePipes();
 void hideHud();
 void showHud();
 
 void init(void) {
-  const TFont *fonts[2]{&verdana9Font, &verdana9bFont};
-
-  constexpr SCR_ENTRY *maps[3] = {
-      (SCR_ENTRY *)map_bg1Map,
-      (SCR_ENTRY *)map_bg2Map,
-      (SCR_ENTRY *)map_bg3Map,
-  };
-
-  const TILE4 *tiles[3] = {
-      (TILE4 *)map_bg1Tiles,
-      (TILE4 *)map_bg2Tiles,
-      (TILE4 *)map_bg3Tiles,
-  };
-
-  constexpr u16 tids[3] = {0, 155, 208};
-  constexpr FIXED bg_speeds[3] = {0x090, 0x050, -0x020};
-
   sqran(Global::seed_rand);
+  u8 r8 = (u8)Global::seed_rand;
+  Global::checkSaveError(sram_write(Global::SAVE_RSEED, &r8, 1));
 
   T_setMode(0);
   T_enableBg(0);

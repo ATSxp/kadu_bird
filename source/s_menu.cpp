@@ -86,7 +86,7 @@ void init() {
 }
 
 void update() {
-  mmSetModuleVolume(500);
+  mmSetModuleVolume(200);
 
   t += 0x0400;
 

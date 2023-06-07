@@ -3,6 +3,8 @@
 
 #include "engine/gba.h"
 #include "scener.hpp"
+#include "libsavgba/err_def.h"
+#include "libsavgba/gba_sram.h"
 #include <maxmod.h>
 #include <tonc.h>
 #include "soundbank.h"
@@ -14,15 +16,26 @@
 #define D_MEDIUM    0x01
 #define D_HARD      0x02
 
+#define SRAM_BUFFER_SIZE 50
+
 namespace Global {
 typedef struct {
   int offsetx, offsety;
   u16 size, offset_tid;
 } SprBase;
 
+enum SaveIds {
+  SAVE_RECORD = 9,
+  SAVE_RSEED,
+};
+
 INLINE bool AABB(POINT32 p1, u32 w1, u32 h1, POINT32 p2, u32 w2, u32 h2);
+INLINE void checkSaveError(u32 err);
+
 
 RECT se_ballon(SCR_ENTRY *sbb, int x, int y, int w, int h, SCR_ENTRY se);
+void loadSave();
+void saveRecord();
 
 extern Scener::Scene s_menu;
 extern Scener::Scene s_game;
@@ -34,6 +47,7 @@ extern u32 seed_rand, record_point;
 extern u32 money;
 // extern int times[5];
 extern int df;
+extern u8 sram_buffer[SRAM_BUFFER_SIZE];
 
 // Audio
 extern bool sound;
@@ -52,6 +66,13 @@ INLINE bool AABB(POINT32 p1, u32 w1, u32 h1, POINT32 p2, u32 w2, u32 h2) {
           p2.x < p1.x + static_cast<int>(w1) &&
           p2.y < p1.y + static_cast<int>(h1));
 }
+
+INLINE void checkSaveError(u32 err) {
+  if (err)
+    mgba_printf(MGBA_LOG_ERROR, "SRAM Write Error: %s",
+                SavErrMsgs[err]);
+}
+
 } // namespace Global
 
 #endif // !__GLOBAL_HPP__

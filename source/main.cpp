@@ -1,10 +1,31 @@
 #include "../include/engine/gba.h"
 #include "../include/global.hpp"
 #include <maxmod.h>
+#include "../include/libsavgba/err_def.h"
+#include "../include/libsavgba/gba_sram.h"
 #include "soundbank_bin.h"
 
 int main () {
+  u32 err;
   mgba_open();
+
+  err = sram_write(0, (u8*)"SRAM_Vnnn", 9);
+  if (err) {
+    mgba_printf(MGBA_LOG_ERROR, "SRAM Write Error: %s\n", SavErrMsgs[err]);
+    goto end;
+  }
+
+  err = sram_read(0, Global::sram_buffer, SRAM_BUFFER_SIZE);
+  if (err) {
+    mgba_printf(MGBA_LOG_ERROR, "SRAM Read Error: %s\n", SavErrMsgs[err]);
+    goto end;
+  }
+
+  mgba_printf(MGBA_LOG_DEBUG, "SRAM Test Passed!");
+
+  Global::loadSave();
+
+end:
   T_init(mmVBlank);
   mmInitDefault((mm_addr)soundbank_bin, 16);
 

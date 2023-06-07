@@ -1,5 +1,7 @@
 #include "../include/e_game_over.hpp"
 #include "../include/global.hpp"
+#include "../include/libsavgba/err_def.h"
+#include "../include/libsavgba/gba_sram.h"
 #include <maxmod.h>
 #include <string.h>
 
@@ -103,6 +105,9 @@ void GameOver::update(Player &p) {
 
       tte_set_font(&verdana11Font);
       tte_write("#{ci:4;P:147,20}New Record!!");
+
+      u8 r8 = (u8)Global::record_point;
+      Global::checkSaveError(sram_write(Global::SAVE_RECORD, &r8, 1));
     }
 
     if (key_hit(KEY_ACCEPT | KEY_A | KEY_B)) {

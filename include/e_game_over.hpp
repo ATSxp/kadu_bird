@@ -9,7 +9,7 @@
 
 class GameOver {
 private:
-  int ii;
+  int ii, err;
   bool show_txt{false};
   bool record_breaked{false};
   bool show_menu{false};
