@@ -203,21 +203,18 @@ void update(void) {
 
 void end(void) {
   RegisterRamReset(RESET_PALETTE);
-  RegisterRamReset(RESET_VRAM);
-
-  REG_BLDY = 0;
 
   tte_erase_screen();
   tte_set_pos(0, 0);
 
-  p = nullptr;
-  gmovr = nullptr;
+  p.reset();
+  gmovr.reset();
 
   diePipes();
 
   for (ii = 0; ii < bg_size; ii++) {
+    bg[ii].reset();
     REM_SPR(Global::hp_spr[ii]);
-    bg[ii] = nullptr;
     if (ii > 2)
       break;
     REM_SPR(board_spr[ii]);

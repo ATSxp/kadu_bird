@@ -144,9 +144,7 @@ void update() {
 
 void end() {
   RegisterRamReset(RESET_PALETTE);
-  RegisterRamReset(RESET_VRAM);
 
-  REG_BLDY = 0;
   REG_BG_OFS[0].x = REG_BG_OFS[0].y = 0;
 
   for (ii = 0; ii < 4; ii++) {
@@ -189,3 +187,4 @@ void reloadSlide() {
 namespace Global {
 Scener::Scene s_egg = {Egg::init, Egg::update, Egg::end};
 }
+// EOF

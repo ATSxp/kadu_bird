@@ -1,3 +1,10 @@
+/*
+  date: 08/06/2023
+  file: s_options.cpp
+  author: ATSxp
+  desc: Options scene
+*/
+
 #include "../include/s_options.hpp"
 #include "../include/buttons.hpp"
 #include "../include/global.hpp"
@@ -47,13 +54,14 @@ void init() {
       },
       true);
 
+  btns->add("Erase Save", [](void) { Global::clearSram(); });
   btns->add("Back To Menu", [](void) { Scener::set(Global::s_menu); });
 
   bh = btns->btns.size() * 3;
 
   board_pos.y = (SCREEN_HEIGHT_T - bh) >> 1;
 
-  Global::se_ballon(&se_mem[29][0], board_pos.x, board_pos.y, bw, bh, SE_ID(1));
+  Global::se_ballon(&se_mem[29][0], board_pos.x, board_pos.y, bw, bh - 2, SE_ID(1));
   se_fill(&se_mem[27][0], SE_ID(6));
 
   GRIT_CPY(pal_bg_mem, gfx_ballon2Pal);
@@ -68,7 +76,8 @@ void init() {
 void update() {
   tte_erase_screen();
 
-  if (evy > 0x00) evy -= 0x03;
+  if (evy > 0x00)
+    evy -= 0x03;
   evy = clamp(evy, 0, 0x081);
   REG_BLDY = BLDY_BUILD(evy >> 3);
 
@@ -89,10 +98,10 @@ void end() {
   REG_BLDY = 0;
 
   for (ii = 0; ii < 2; ii++) {
-    bg[ii] = nullptr;
+    bg[ii].reset();
   }
 
-  btns = nullptr;
+  btns.reset();
 }
 
 } // namespace Options
@@ -100,3 +109,4 @@ void end() {
 namespace Global {
 Scener::Scene s_options = {Options::init, Options::update, Options::end};
 }
+// EOF

@@ -31,7 +31,7 @@ enum SaveIds {
 
 INLINE bool AABB(POINT32 p1, u32 w1, u32 h1, POINT32 p2, u32 w2, u32 h2);
 INLINE void checkSaveError(u32 err);
-
+INLINE void clearSram();
 
 RECT se_ballon(SCR_ENTRY *sbb, int x, int y, int w, int h, SCR_ENTRY se);
 void loadSave();
@@ -71,6 +71,20 @@ INLINE void checkSaveError(u32 err) {
   if (err)
     mgba_printf(MGBA_LOG_ERROR, "SRAM Write Error: %s",
                 SavErrMsgs[err]);
+}
+
+INLINE void clearSram() {
+  u32 err;
+
+  checkSaveError(sram_write(0, (u8*)"SRAM_Vnnn", SRAM_BUFFER_SIZE));
+
+  err = sram_read(0, Global::sram_buffer, SRAM_BUFFER_SIZE);
+  if (err) {
+    mgba_printf(MGBA_LOG_ERROR, "SRAM Read Error: %s\n", SavErrMsgs[err]);
+    return;
+  }
+
+  loadSave();
 }
 
 } // namespace Global

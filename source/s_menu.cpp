@@ -1,9 +1,17 @@
+/*
+  date: 08/06/2023
+  file: s_menu.cpp
+  author: ATSxp
+  desc: Intro and menu scene
+*/
+
 #include "../include/s_menu.hpp"
 #include "../include/buttons.hpp"
 #include "../include/global.hpp"
 #include "../include/map.hpp"
 #include <maxmod.h>
 #include <memory>
+#include <string.h>
 #include <tonc.h>
 
 #include "map_menu1.h"
@@ -111,23 +119,23 @@ void update() {
 
 void end() {
   RegisterRamReset(RESET_PALETTE);
-  RegisterRamReset(RESET_VRAM);
-
-  REG_BLDY = 0;
 
   for (ii = 0; ii < 3; ii++) {
-    // if (start_spr[ii]) {
-    REM_SPR(start_spr[ii]);
-    REM_SPR(date_spr[ii]);
-    // }
+    if (start_spr[0]) {
+      REM_SPR(start_spr[ii]);
+      REM_SPR(date_spr[ii]);
+    }
 
-    bg[ii] = nullptr;
+    bg[ii].reset();
   }
 
-  btns = nullptr;
+  btns.reset();
 }
 
 void initIntro() {
+  REG_BLDCNT = BLD_ALL | BLD_WHITE;
+  REG_BLDY = BLDY_BUILD(0x080 >> 3);
+
   GRIT_CPY(tile_mem[4], gfx_menu_textTiles);
   GRIT_CPY(&tile_mem[4][24], gfx_menu_dateTiles);
 
@@ -135,8 +143,6 @@ void initIntro() {
     bg[ii] = std::make_shared<Map>(ii + 1, maps[ii], 32, 32, 0, 31 - (ii << 1),
                                    true);
     bg[ii]->setBpp(true);
-
-    LZ77UnCompVram(tiles[ii], &tile8_mem[bg[ii]->cbb][tile_ids[ii]]);
 
     bg[ii]->pos.x = -bg_init_pos[ii].x;
     bg[ii]->pos.y = -bg_init_pos[ii].y;
@@ -151,6 +157,9 @@ void initIntro() {
                             0, 0, NULL);
   }
 
+  for (ii = 0; ii < 3; ii++)
+    LZ77UnCompVram(tiles[ii], &tile8_mem[0][tile_ids[ii]]);
+
   // Clear part of Map from BG 1
   memset16(&se_mem[bg[0]->sbb][bg[0]->cbb], 0x00, 202);
   memset16(&se_mem[bg[0]->sbb][bg[0]->cbb + 210], 0x00, 2);
@@ -159,9 +168,8 @@ void initIntro() {
 
   GRIT_CPY(pal_bg_mem, map_menu1Pal);
   GRIT_CPY(pal_obj_mem, gfx_menu_textPal);
-  
-  mmStart(MOD_AFFAIR, MM_PLAY_LOOP);
 
+  mmStart(MOD_AFFAIR, MM_PLAY_LOOP);
 }
 
 void updateIntro() {
@@ -176,9 +184,11 @@ void updateIntro() {
         Scener::set(Global::s_egg);
       } else if (!in_menu) {
         in_menu = true;
-
         RegisterRamReset(RESET_PALETTE);
-        RegisterRamReset(RESET_VRAM);
+        for (ii = 0; ii < 3; ii++) {
+          REM_SPR(start_spr[ii]);
+          REM_SPR(date_spr[ii]);
+        }
         initMenu();
       }
     }
@@ -258,14 +268,16 @@ void initMenu() {
       REM_SPR(start_spr[ii]);
     }
 
-    bg[ii] = nullptr;
+    bg[ii].reset();
   }
 
-  REG_BLDY = BLDY_BUILD(evy >> 3);
+  REG_BLDCNT = BLD_ALL | BLD_BLACK;
+  REG_BLDY = BLDY_BUILD(0x080 >> 3);
 
-  bg[0] = std::make_shared<Map>(1, map_select1Map, 32, 32, 0, 29, true);
-  bg[1] = std::make_shared<Map>(2, nullptr, 32, 32, 0, 27, false);
-  bg[2] = std::make_shared<Map>(3, map_bg_picMap, 32, 32, 0, 25, false);
+  // bg[0] = std::make_shared<Map>(1, map_select1Map, 32, 32, 0, 29, true);
+  bg[0].reset(new Map(1, map_select1Map, 32, 32, 0, 29, true));
+  bg[1].reset(new Map(2, nullptr, 32, 32, 0, 27, false));
+  bg[2].reset(new Map(3, map_bg_picMap, 32, 32, 0, 25, false));
 
   btns = std::make_shared<Button>();
 
@@ -296,13 +308,18 @@ void initMenu() {
   // TODO: Adicionar isso após fazer os extras
   // Global::se_ballon(&se_mem[bg[0]->sbb][0], 0, 0, 10, 4,
   // SE_ID(403) | SE_PALBANK(2));
-  
+
+  Global::se_ballon(&se_mem[bg[0]->sbb][0], 0, 0, 17, 4,
+                    SE_ID(403) | SE_PALBANK(2));
+
   mmStart(MOD_SONGS_OF_A_DRAGON, MM_PLAY_LOOP);
 }
 
 void updateMenu() {
   // TODO: Adicionar isso após fazer os extras
   // char d[10];
+  CSTR best_score_txt = "#{P:4,3}Best Score: #{ci:14}%04d";
+  char d[strlen(best_score_txt)];
 
   if (!in_menu)
     return;
@@ -333,6 +350,11 @@ void updateMenu() {
   // posprintf(d, "#{P:5,4}$ %05d", Global::money);
   // tte_write(d);
 
+  tte_set_ink(15);
+  tte_set_font(&verdana11Font);
+  posprintf(d, best_score_txt, Global::record_point);
+  tte_write(d);
+
   tte_set_ink(14);
   tte_set_font(&verdana10Font);
   btns->setTextPos(25 + ((40 * lu_cos(t) >> 8) >> 8), 13 << 3);
@@ -349,3 +371,4 @@ void updateMenu() {
 namespace Global {
 Scener::Scene s_menu = {Menu::init, Menu::update, Menu::end};
 }
+// EOF

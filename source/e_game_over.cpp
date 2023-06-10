@@ -1,3 +1,9 @@
+/*
+  date: 08/06/2023
+  file: e_game_over.cpp
+  author: ATSxp
+*/
+
 #include "../include/e_game_over.hpp"
 #include "../include/global.hpp"
 #include "../include/libsavgba/err_def.h"
@@ -135,3 +141,4 @@ void GameOver::update(Player &p) {
     bh = clamp(bh, 0x00, max_h + 0x0100);
   }
 }
+// EOF

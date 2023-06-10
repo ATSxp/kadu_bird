@@ -59,8 +59,6 @@ void update() {
 
 void end() {
   RegisterRamReset(RESET_PALETTE);
-  RegisterRamReset(RESET_VRAM);
-  REG_BLDY = 0;
 }
 
 void reloadSlide() {
