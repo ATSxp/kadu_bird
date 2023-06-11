@@ -274,10 +274,8 @@ void initMenu() {
   REG_BLDCNT = BLD_ALL | BLD_BLACK;
   REG_BLDY = BLDY_BUILD(0x080 >> 3);
 
-  // bg[0] = std::make_shared<Map>(1, map_select1Map, 32, 32, 0, 29, true);
   bg[0].reset(new Map(1, map_select1Map, 32, 32, 0, 29, true));
-  bg[1].reset(new Map(2, nullptr, 32, 32, 0, 27, false));
-  bg[2].reset(new Map(3, map_bg_picMap, 32, 32, 0, 25, false));
+  bg[1].reset(new Map(2, map_bg_picMap, 32, 32, 0, 25, false));
 
   btns = std::make_shared<Button>();
 
@@ -361,9 +359,9 @@ void updateMenu() {
 
   btns->update();
 
-  bg[2]->pos.y = 0x04000;
-  bg[2]->move(0x080, 0x00);
-  bg[2]->update();
+  bg[1]->pos.y = 0x04000;
+  bg[1]->move(0x080, 0x00);
+  bg[1]->update();
 }
 
 } // namespace Menu

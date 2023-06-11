@@ -23,7 +23,7 @@ private:
   std::array<const FIXED, 2> hand_minus{-(8 << 8), (8 << 8)};
 
   POINT32 hand_pos[2]{{-(32 << 8), int2fx((SCREEN_HEIGHT - 24) >> 1)},
-                      {SCREEN_WIDTH << 8, int2fx((SCREEN_HEIGHT - 24) >> 1)}};
+                      {(SCREEN_WIDTH + 1) << 8, int2fx((SCREEN_HEIGHT - 24) >> 1)}};
 
   std::array<const FIXED, 2> hand_speed{0x0680, -0x0680};
   std::array<TSprite *, 2> hand_spr{nullptr, nullptr};
