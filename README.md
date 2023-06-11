@@ -2,6 +2,8 @@
 A game developed in C++ for the Nintendo Game Boy Advance, and yes... 
 it's a copy of flappy bird =)
 
+![intro](site/intro.gif) 
+
 ## Why?
 I made this game for two reasons, to honor one of my best friends, to 
 study more about the hardware and development on the GBA and to be able 
