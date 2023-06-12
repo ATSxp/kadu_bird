@@ -3,6 +3,9 @@ A game developed in C++ for the Nintendo Game Boy Advance, and yes...
 it's a copy of flappy bird =)
 
 ![intro](site/intro.gif) 
+![gameplay](site/gameplay.gif)
+
+Download the ROM from the [itchio page](https://atsxp.itch.io/kadu-bird)
 
 ## Why?
 I made this game for two reasons, to honor one of my best friends, to 

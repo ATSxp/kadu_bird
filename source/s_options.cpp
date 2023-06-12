@@ -83,8 +83,8 @@ void update() {
 
   btns->setButtonStatus(0, Global::sound);
 
-  if (key_hit(KEY_B))
-    Scener::set(Global::s_menu);
+  // if (key_hit(KEY_B))
+    // Scener::set(Global::s_menu);
 
   btns->update();
 

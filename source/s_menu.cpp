@@ -274,8 +274,8 @@ void initMenu() {
   REG_BLDCNT = BLD_ALL | BLD_BLACK;
   REG_BLDY = BLDY_BUILD(0x080 >> 3);
 
-  bg[0].reset(new Map(1, map_select1Map, 32, 32, 0, 29, true));
-  bg[1].reset(new Map(2, map_bg_picMap, 32, 32, 0, 25, false));
+  bg[0] = std::make_shared<Map>(1, map_select1Map, 32, 32, 0, 29, true);
+  bg[1] = std::make_shared<Map>(2, map_bg_picMap, 32, 32, 0, 25, false);
 
   btns = std::make_shared<Button>();
 
@@ -289,6 +289,8 @@ void initMenu() {
   LZ77UnCompVram(map_select1Tiles, tile_mem);
   GRIT_CPY(&tile_mem[0][248], map_bg_picTiles);
   GRIT_CPY(&tile_mem[0][403], gfx_ballon1Tiles);
+
+  bg[1]->pos.y = 0x04000;
 
   btns->add("Play", [](void) { next_scene = 0; });
   btns->add("Options", [](void) { next_scene = 1; });
